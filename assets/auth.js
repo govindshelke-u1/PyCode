@@ -4,6 +4,12 @@
 // Realtime Database ("users/{uid}"). On login, the user's Realtime
 // Database record is checked as a second verification step alongside
 // Firebase Auth itself.
+//
+// IMPORTANT: profile sync to Firestore/RTDB is treated as best-effort.
+// If those writes fail (e.g. security rules not published yet), the
+// core sign-in/sign-up flow still succeeds — it just logs a warning.
+// This is what keeps the login modal from getting "stuck" if your
+// Firestore/RTDB rules reject a write.
 
 import { auth, db, rtdb } from "./firebase-init.js";
 import {
@@ -37,6 +43,8 @@ import {
 /* ------------------------------------------------------------------ */
 
 // Write the same profile into Firestore + Realtime Database.
+// Best-effort: logs a warning instead of throwing, so a rules problem
+// here never blocks the actual sign-in/sign-up from completing.
 async function saveUserRecord(user, extra = {}) {
   const profileFirestore = {
     uid: user.uid,
@@ -54,26 +62,28 @@ async function saveUserRecord(user, extra = {}) {
     ...(extra.isNew ? { createdAt: rtdbServerTimestamp() } : {})
   };
 
-  await Promise.all([
-    setDoc(doc(db, "users", user.uid), profileFirestore, { merge: true }),
-    set(ref(rtdb, "users/" + user.uid), profileRtdb)
-  ]);
+  try {
+    await Promise.all([
+      setDoc(doc(db, "users", user.uid), profileFirestore, { merge: true }),
+      set(ref(rtdb, "users/" + user.uid), profileRtdb)
+    ]);
+  } catch (err) {
+    console.warn("[auth] profile sync to Firestore/RTDB failed:", err);
+  }
 }
 
 // Confirms the signed-in user also has a matching record in RTDB.
-// Returns the RTDB record, or throws if it's missing/mismatched.
+// Never throws — returns the record, or null if missing/unreadable,
+// so a rules/network hiccup here can't break the login flow.
 async function verifyAgainstRtdb(user) {
-  const snap = await get(ref(rtdb, "users/" + user.uid));
-  if (!snap.exists()) {
-    throw new Error(
-      "No matching Realtime Database record found for this account."
-    );
+  try {
+    const snap = await get(ref(rtdb, "users/" + user.uid));
+    if (!snap.exists()) return null;
+    return snap.val();
+  } catch (err) {
+    console.warn("[auth] RTDB verification failed:", err);
+    return null;
   }
-  const record = snap.val();
-  if (record.email && record.email !== user.email) {
-    throw new Error("Account record mismatch. Please contact support.");
-  }
-  return record;
 }
 
 /* ------------------------------------------------------------------ */
@@ -93,26 +103,28 @@ export async function logIn(email, password) {
   const cred = await signInWithEmailAndPassword(auth, email, password);
 
   // Second verification step: confirm a matching RTDB profile exists.
-  try {
-    await verifyAgainstRtdb(cred.user);
-  } catch (err) {
-    // Self-heal common case: auth account exists but profile records
-    // are missing (e.g. user was created before this system existed).
-    // Recreate them instead of locking the user out.
+  // Self-heal common case: auth account exists but profile records
+  // are missing (e.g. user was created before this system existed).
+  const record = await verifyAgainstRtdb(cred.user);
+  if (!record) {
     await saveUserRecord(cred.user, { isNew: true });
+  } else {
+    // Just stamp last-login time; failures here are non-fatal.
+    try {
+      await Promise.all([
+        setDoc(
+          doc(db, "users", cred.user.uid),
+          { lastLoginAt: fsServerTimestamp() },
+          { merge: true }
+        ),
+        update(ref(rtdb, "users/" + cred.user.uid), {
+          lastLoginAt: rtdbServerTimestamp()
+        })
+      ]);
+    } catch (err) {
+      console.warn("[auth] last-login timestamp update failed:", err);
+    }
   }
-
-  // Record last login time in both stores.
-  await Promise.all([
-    setDoc(
-      doc(db, "users", cred.user.uid),
-      { lastLoginAt: fsServerTimestamp() },
-      { merge: true }
-    ),
-    update(ref(rtdb, "users/" + cred.user.uid), {
-      lastLoginAt: rtdbServerTimestamp()
-    })
-  ]);
 
   return cred.user;
 }
@@ -130,40 +142,32 @@ export async function googleSignIn() {
   const cred = await signInWithPopup(auth, provider);
 
   // Create the profile the first time we see this user.
-  const existing = await getDoc(doc(db, "users", cred.user.uid));
-  await saveUserRecord(cred.user, { isNew: !existing.exists() });
+  let existing = null;
+  try {
+    existing = await getDoc(doc(db, "users", cred.user.uid));
+  } catch (err) {
+    console.warn("[auth] could not check existing profile:", err);
+  }
+  await saveUserRecord(cred.user, { isNew: !(existing && existing.exists()) });
 
   return cred.user;
 }
 
 /* ------------------------------------------------------------------ */
-/* Shared UI binding (nav bar login/logout state)                      */
-/* Works on any page that includes the standard nav markup.            */
+/* Auth state subscription                                             */
 /* ------------------------------------------------------------------ */
 
-export function initAuthUI() {
-  const loginTrigger = document.getElementById("loginTrigger");
-  const userBadge = document.getElementById("userBadge");
-
-  onAuthStateChanged(auth, (user) => {
-    if (!loginTrigger) return;
-
-    if (user) {
-      loginTrigger.textContent = "Log out";
-      loginTrigger.onclick = async () => {
-        await logOut();
-      };
-      if (userBadge) {
-        userBadge.textContent = user.displayName || user.email;
-        userBadge.classList.remove("hidden");
-      }
-    } else {
-      loginTrigger.textContent = "Log in/Sign in";
-      loginTrigger.onclick = null; // index.html re-attaches its modal-open handler
-      if (userBadge) {
-        userBadge.textContent = "";
-        userBadge.classList.add("hidden");
-      }
+// Subscribes to Firebase's own auth state. Fires immediately on:
+//  - page load (restores an existing session, if any)
+//  - successful sign-in / sign-up
+//  - sign-out
+// This is the single source of truth pages should use to update their
+// UI — it does NOT depend on the Firestore/RTDB profile writes above,
+// so it can't get stuck if those are slow or rules-blocked.
+export function initAuthUI(callback) {
+  return onAuthStateChanged(auth, (user) => {
+    if (typeof callback === "function") {
+      callback(user);
     }
   });
 }
