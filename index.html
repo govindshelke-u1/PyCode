@@ -504,8 +504,18 @@
   <script type="module">
     import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js";
 
+    // While a sign-up/login/google flow is actively running, the automatic
+    // onAuthStateChanged listener below can fire mid-flight (e.g. right
+    // after account creation but before updateProfile() has set the real
+    // display name). Suppressing it during that window prevents it from
+    // briefly/incorrectly showing an email-derived name instead of the
+    // one the user typed. The explicit updateGlobalAuthUI() call at the
+    // end of each flow always has the correct final data.
+    let suppressAutoAuthUI = false;
+
     // Subscribe to Firebase Auth state listener
     initAuthUI((user) => {
+      if (suppressAutoAuthUI) return;
       window.updateGlobalAuthUI(user);
     });
 
@@ -546,6 +556,7 @@
       const password = document.getElementById('loginPassword').value;
       
       setBusy('loginSubmitBtn', true, 'Signing in...', 'Sign In');
+      suppressAutoAuthUI = true;
       try {
         const user = await logIn(email, password);
         window.updateGlobalAuthUI(user);
@@ -553,6 +564,7 @@
       } catch (err) {
         showError('loginError', friendlyAuthError(err));
       } finally {
+        suppressAutoAuthUI = false;
         setBusy('loginSubmitBtn', false, 'Signing in...', 'Sign In');
       }
     });
@@ -566,6 +578,7 @@
       const password = document.getElementById('signupPassword').value;
 
       setBusy('signupSubmitBtn', true, 'Creating account...', 'Create Account');
+      suppressAutoAuthUI = true;
       try {
         const user = await signUp(name, email, password);
         // Explicitly pass name to avoid Firebase display name delay
@@ -574,6 +587,7 @@
       } catch (err) {
         showError('signupError', friendlyAuthError(err));
       } finally {
+        suppressAutoAuthUI = false;
         setBusy('signupSubmitBtn', false, 'Creating account...', 'Create Account');
       }
     });
@@ -581,21 +595,27 @@
     // Google Sign-In
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
       hideError('loginError');
+      suppressAutoAuthUI = true;
       try {
         const user = await googleSignIn();
         window.updateGlobalAuthUI(user);
       } catch (err) {
         showError('loginError', friendlyAuthError(err));
+      } finally {
+        suppressAutoAuthUI = false;
       }
     });
 
     document.getElementById('googleSignupBtn').addEventListener('click', async () => {
       hideError('signupError');
+      suppressAutoAuthUI = true;
       try {
         const user = await googleSignIn();
         window.updateGlobalAuthUI(user);
       } catch (err) {
         showError('signupError', friendlyAuthError(err));
+      } finally {
+        suppressAutoAuthUI = false;
       }
     });
 
