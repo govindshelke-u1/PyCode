@@ -501,26 +501,23 @@
   </script>
 
   <!-- Auth Module Integration -->
-  <script type="module">
+    <script type="module">
     import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js";
 
-    // While a sign-up/login/google flow is actively running, the automatic
-    // onAuthStateChanged listener below can fire mid-flight (e.g. right
-    // after account creation but before updateProfile() has set the real
-    // display name). Suppressing it during that window prevents it from
-    // briefly/incorrectly showing an email-derived name instead of the
-    // one the user typed. The explicit updateGlobalAuthUI() call at the
-    // end of each flow always has the correct final data.
     let suppressAutoAuthUI = false;
+    let explicitNameOverride = null; // <-- CACHES THE NAME DURING SIGNUP
 
     // Subscribe to Firebase Auth state listener
     initAuthUI((user) => {
       if (suppressAutoAuthUI) return;
-      window.updateGlobalAuthUI(user);
+      // Pass the cached name so the listener doesn't fall back to email prefix
+      window.updateGlobalAuthUI(user, explicitNameOverride);
+      explicitNameOverride = null; // Consume it after use
     });
 
     // Log Out Trigger
     document.getElementById('logoutBtn').addEventListener('click', async () => {
+      explicitNameOverride = null;
       try {
         await logOut();
       } catch (e) {
@@ -552,6 +549,7 @@
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       hideError('loginError');
+      explicitNameOverride = null; // Don't use a stale cached name
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
       
@@ -579,22 +577,28 @@
 
       setBusy('signupSubmitBtn', true, 'Creating account...', 'Create Account');
       suppressAutoAuthUI = true;
+      explicitNameOverride = name; // <-- CACHE THE TYPED NAME
       try {
         const user = await signUp(name, email, password);
-        // Explicitly pass name to avoid Firebase display name delay
-        window.updateGlobalAuthUI(user, name);
+        // If signUp returns the user/credential, update immediately
+        if (user) {
+          window.updateGlobalAuthUI(user, explicitNameOverride);
+          explicitNameOverride = null;
+        }
         e.target.reset();
       } catch (err) {
         showError('signupError', friendlyAuthError(err));
+        explicitNameOverride = null;
       } finally {
         suppressAutoAuthUI = false;
         setBusy('signupSubmitBtn', false, 'Creating account...', 'Create Account');
       }
     });
 
-    // Google Sign-In
+    // Google Sign-In (Login modal)
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
       hideError('loginError');
+      explicitNameOverride = null; // Google provides its own displayName
       suppressAutoAuthUI = true;
       try {
         const user = await googleSignIn();
@@ -606,8 +610,10 @@
       }
     });
 
+    // Google Sign-In (Signup modal)
     document.getElementById('googleSignupBtn').addEventListener('click', async () => {
       hideError('signupError');
+      explicitNameOverride = null; // Google provides its own displayName
       suppressAutoAuthUI = true;
       try {
         const user = await googleSignIn();
