@@ -15,16 +15,17 @@
     @keyframes pulseGlow { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.08); } }
     .floating-icon { animation: float 6s ease-in-out infinite; }
     .glow-bg { animation: pulseGlow 8s ease-in-out infinite; }
-    .glass-card { background: rgba(18, 24, 38, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .modal-backdrop { background: rgba(5, 8, 15, 0.8); backdrop-filter: blur(8px); }
+    .glass-card { background: rgba(18, 24, 38, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .modal-backdrop { background: rgba(5, 8, 15, 0.85); backdrop-filter: blur(8px); }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
+  <!-- Background Glow -->
   <div class="fixed top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none glow-bg"></div>
 
   <div>
-    <!-- Navigation -->
+    <!-- Navigation Bar -->
     <nav class="sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/80 bg-slate-950/70">
       <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <a href="index.html" class="flex items-center gap-3">
@@ -34,21 +35,16 @@
           <span class="text-xl font-bold tracking-tight text-white">Py<span class="text-yellow-400">Code</span></span>
         </a>
 
+        <!-- Public Navigation Links -->
         <div class="hidden md:flex gap-8 text-sm font-semibold text-slate-300">
           <a href="index.html" class="text-yellow-400">Home</a>
           <a href="why-python.html" class="hover:text-yellow-400 transition">Why Python?</a>
           <a href="curriculum.html" class="hover:text-yellow-400 transition">Curriculum</a>
         </div>
         
-        <!-- Auth Container -->
-        <div id="authContainer" class="flex items-center gap-3">
-          <!-- Unauthenticated State: Log In Button -->
-          <button id="loginTrigger" type="button" class="px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-sm rounded-xl transition shadow-lg shadow-yellow-500/20 flex items-center gap-2 cursor-pointer">
-            <i class="fa-solid fa-right-to-bracket text-xs pointer-events-none"></i>
-            <span>Log in/Sign in</span>
-          </button>
-
-          <!-- Authenticated State: Replaces button with User Name & Log Out -->
+        <!-- Auth Profile Badge & Action Button -->
+        <div class="flex items-center gap-3">
+          <!-- User Profile Display (Shown when logged in) -->
           <div id="userProfileBadge" class="hidden items-center gap-2 bg-slate-900 border border-slate-700/80 rounded-xl p-1.5 pl-3.5 shadow-sm">
             <span class="text-xs font-semibold text-yellow-400 flex items-center gap-2">
               <i class="fa-solid fa-circle-user text-sm"></i>
@@ -58,6 +54,12 @@
               <i class="fa-solid fa-right-from-bracket pointer-events-none"></i>
             </button>
           </div>
+
+          <!-- Log In / Sign In Button (Shown when logged out) -->
+          <button id="loginTrigger" type="button" class="px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-sm rounded-xl transition shadow-lg shadow-yellow-500/20 flex items-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-right-to-bracket text-xs pointer-events-none"></i>
+            <span>Log in/Sign in</span>
+          </button>
         </div>
       </div>
     </nav>
@@ -122,9 +124,9 @@
     </section>
   </div>
 
-  <!-- LOGIN MODAL -->
+  <!-- OVERLAY 1: LOGIN MODAL -->
   <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
-    <div class="glass-card w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-700/80 relative animate-in fade-in zoom-in-95 duration-200">
+    <div class="glass-card w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-700/80 relative">
       <button type="button" onclick="closeModal('loginModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white transition w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-800">
         <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
       </button>
@@ -156,6 +158,14 @@
           </div>
         </div>
 
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="rounded bg-slate-900 border-slate-700 text-yellow-400 focus:ring-0">
+            Remember me
+          </label>
+          <a href="#" id="forgotPasswordLink" class="text-yellow-400 hover:underline">Forgot password?</a>
+        </div>
+
         <button id="loginSubmitBtn" type="submit" class="w-full py-3 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-yellow-500/20 transition text-sm cursor-pointer">
           Sign In
         </button>
@@ -176,9 +186,9 @@
     </div>
   </div>
 
-  <!-- SIGN UP MODAL -->
+  <!-- OVERLAY 1B: SIGN UP MODAL -->
   <div id="signupModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
-    <div class="glass-card w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-700/80 relative animate-in fade-in zoom-in-95 duration-200">
+    <div class="glass-card w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-700/80 relative">
       <button type="button" onclick="closeModal('signupModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white transition w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-800">
         <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
       </button>
@@ -238,7 +248,7 @@
     </div>
   </div>
 
-  <!-- ENROLLMENT PAYMENT MODAL -->
+  <!-- OVERLAY 2: ENROLL / PAYMENT PORTAL MODAL -->
   <div id="paymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
     <div class="glass-card w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-700/80 relative max-h-[90vh] overflow-y-auto">
       <button type="button" onclick="closeModal('paymentModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white transition w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-800">
@@ -269,7 +279,25 @@
 
       <form onsubmit="event.preventDefault(); alert('Payment Successful! Welcome to the course.'); closeModal('paymentModal');" class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-2">Cardholder Name</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Select Payment Method</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex flex-col items-center justify-center p-3 rounded-xl border border-yellow-400/80 bg-yellow-400/10 text-yellow-400 cursor-pointer text-xs font-semibold gap-1">
+              <input type="radio" name="pay_method" checked class="hidden">
+              <i class="fa-regular fa-credit-card text-base pointer-events-none"></i> Card
+            </label>
+            <label class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 cursor-pointer text-xs font-semibold gap-1 hover:border-slate-700">
+              <input type="radio" name="pay_method" class="hidden">
+              <i class="fa-solid fa-qrcode text-base pointer-events-none"></i> UPI
+            </label>
+            <label class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 cursor-pointer text-xs font-semibold gap-1 hover:border-slate-700">
+              <input type="radio" name="pay_method" class="hidden">
+              <i class="fa-solid fa-building-columns text-base pointer-events-none"></i> NetBanking
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Cardholder Name</label>
           <input type="text" placeholder="John Doe" required class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-yellow-400 transition" />
         </div>
 
@@ -277,12 +305,31 @@
           <label class="block text-xs font-semibold text-slate-300 mb-1.5">Card Number</label>
           <div class="relative">
             <input type="text" placeholder="4532 •••• •••• 8890" maxlength="19" required class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-yellow-400 transition" />
+            <div class="absolute right-3 top-3 text-slate-400 flex gap-2 text-sm pointer-events-none">
+              <i class="fa-brands fa-cc-visa"></i>
+              <i class="fa-brands fa-cc-mastercard"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Expiry Date</label>
+            <input type="text" placeholder="MM/YY" maxlength="5" required class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-yellow-400 transition" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">CVV / CVC</label>
+            <input type="password" placeholder="123" maxlength="4" required class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-yellow-400 transition" />
           </div>
         </div>
 
         <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-yellow-500/20 transition text-sm flex items-center justify-center gap-2 mt-2 cursor-pointer">
           <i class="fa-solid fa-lock text-xs pointer-events-none"></i> Complete Payment • ₹1,999
         </button>
+
+        <p class="text-center text-[11px] text-slate-500 flex items-center justify-center gap-1 mt-2">
+          <i class="fa-solid fa-shield text-slate-600"></i> Encrypted 256-bit SSL Secure Payment
+        </p>
       </form>
     </div>
   </div>
@@ -302,10 +349,10 @@
     </div>
   </footer>
 
-  <!-- Synchronous Core Engine -->
+  <!-- Synchronous Core Engine: Resets state, handles UI events -->
   <script>
     window.isUserLoggedIn = false;
-    let activeStudentName = "Future Developer";
+    let activeStudentName = localStorage.getItem('pycode_user_name') || "Future Developer";
     let lineIdx = 0, charIdx = 0;
     const typingContainer = document.getElementById("typing-output");
 
@@ -336,8 +383,62 @@
     }
     typeEffect();
 
+    // Central UI Updater
+    window.updateGlobalAuthUI = function(user, explicitName) {
+      const loginTrigger = document.getElementById('loginTrigger');
+      const userProfileBadge = document.getElementById('userProfileBadge');
+      const userNameDisplay = document.getElementById('userNameDisplay');
+      const terminalName = document.getElementById('terminalStudentName');
+
+      if (user) {
+        window.isUserLoggedIn = true;
+        const name = explicitName || user.displayName || localStorage.getItem('pycode_user_name') || (user.email ? user.email.split('@')[0] : 'Developer');
+        localStorage.setItem('pycode_user_name', name);
+
+        if (loginTrigger) loginTrigger.classList.add('hidden');
+        if (userProfileBadge) {
+          userProfileBadge.classList.remove('hidden');
+          userProfileBadge.classList.add('flex');
+        }
+        if (userNameDisplay) userNameDisplay.textContent = name;
+        if (terminalName) terminalName.textContent = `"${name}"`;
+        activeStudentName = name;
+
+        // Ensure all modals close on success
+        window.closeModal('loginModal');
+        window.closeModal('signupModal');
+      } else {
+        window.isUserLoggedIn = false;
+        localStorage.removeItem('pycode_user_name');
+
+        if (userProfileBadge) {
+          userProfileBadge.classList.add('hidden');
+          userProfileBadge.classList.remove('flex');
+        }
+        if (loginTrigger) loginTrigger.classList.remove('hidden');
+        if (terminalName) terminalName.textContent = `"Future Developer"`;
+        activeStudentName = "Future Developer";
+      }
+    };
+
+    // Helper: Reset button state & errors when opening modals
+    function resetFormState(modalId) {
+      if (modalId === 'loginModal') {
+        const btn = document.getElementById('loginSubmitBtn');
+        if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
+        const err = document.getElementById('loginError');
+        if (err) err.classList.add('hidden');
+      } else if (modalId === 'signupModal') {
+        const btn = document.getElementById('signupSubmitBtn');
+        if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
+        const err = document.getElementById('signupError');
+        if (err) err.classList.add('hidden');
+      }
+    }
+
     // Modal Control Functions
     window.openModal = function(modalId) {
+      resetFormState(modalId);
       const modal = document.getElementById(modalId);
       if (modal) {
         modal.classList.remove('hidden');
@@ -383,75 +484,39 @@
       openModal('loginModal');
     });
 
-    // Open Login Modal on click
+    // Open Login Modal
     document.getElementById('loginTrigger').addEventListener('click', () => {
       openModal('loginModal');
     });
 
-    // ENROLL NOW: Checks authentication state
+    // ENROLL NOW: Dynamic check
     document.getElementById('enrollTrigger').addEventListener('click', (e) => {
       e.preventDefault();
       if (window.isUserLoggedIn) {
-        openModal('paymentModal'); // Logged in: Directly accessible
+        openModal('paymentModal');
       } else {
-        openModal('loginModal');   // Not logged in: Prompts to log in
+        openModal('loginModal');
       }
     });
   </script>
 
   <!-- Auth Module Integration -->
   <script type="module">
-    import { signUp, logIn, logOut, googleSignIn, initAuthUI } from "./assets/auth.js";
+    import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js";
 
-    // Replaces login button with the user name badge
-    function updateAuthStateUI(user) {
-      window.isUserLoggedIn = !!user;
-      
-      const loginTrigger = document.getElementById('loginTrigger');
-      const userProfileBadge = document.getElementById('userProfileBadge');
-      const userNameDisplay = document.getElementById('userNameDisplay');
-      const terminalName = document.getElementById('terminalStudentName');
-
-      if (user) {
-        const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'Developer');
-        
-        // Hide Login Button and show User Name Badge in its place
-        if (loginTrigger) loginTrigger.classList.add('hidden');
-        if (userProfileBadge) {
-          userProfileBadge.classList.remove('hidden');
-          userProfileBadge.classList.add('flex');
-        }
-        if (userNameDisplay) userNameDisplay.textContent = displayName;
-
-        // Personalize Terminal code editor
-        if (terminalName) terminalName.textContent = `"${displayName}"`;
-        activeStudentName = displayName;
-
-        // Dismiss open modals
-        closeModal('loginModal');
-        closeModal('signupModal');
-      } else {
-        // Show Login Button and hide User Name Badge
-        if (userProfileBadge) {
-          userProfileBadge.classList.add('hidden');
-          userProfileBadge.classList.remove('flex');
-        }
-        if (loginTrigger) loginTrigger.classList.remove('hidden');
-
-        if (terminalName) terminalName.textContent = `"Future Developer"`;
-        activeStudentName = "Future Developer";
-      }
-    }
-
-    // Subscribe to Firebase auth changes
+    // Subscribe to Firebase Auth state listener
     initAuthUI((user) => {
-      updateAuthStateUI(user);
+      window.updateGlobalAuthUI(user);
     });
 
     // Log Out Trigger
     document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await logOut();
-      updateAuthStateUI(null);
+      try {
+        await logOut();
+      } catch (e) {
+        console.error("Logout error", e);
+      }
+      window.updateGlobalAuthUI(null);
     });
 
     function showError(elId, message) {
@@ -479,13 +544,14 @@
       hideError('loginError');
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
+      
       setBusy('loginSubmitBtn', true, 'Signing in...', 'Sign In');
       try {
         const cred = await logIn(email, password);
-        updateAuthStateUI(cred?.user || { email });
+        window.updateGlobalAuthUI(cred?.user || { email });
         e.target.reset();
       } catch (err) {
-        showError('loginError', err?.message || 'Login failed. Please try again.');
+        showError('loginError', friendlyAuthError(err));
       } finally {
         setBusy('loginSubmitBtn', false, 'Signing in...', 'Sign In');
       }
@@ -498,13 +564,15 @@
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
+
       setBusy('signupSubmitBtn', true, 'Creating account...', 'Create Account');
       try {
         const cred = await signUp(name, email, password);
-        updateAuthStateUI(cred?.user || { displayName: name, email });
+        // Explicitly pass name to avoid Firebase display name delay
+        window.updateGlobalAuthUI(cred?.user || { email }, name);
         e.target.reset();
       } catch (err) {
-        showError('signupError', err?.message || 'Sign up failed. Please try again.');
+        showError('signupError', friendlyAuthError(err));
       } finally {
         setBusy('signupSubmitBtn', false, 'Creating account...', 'Create Account');
       }
@@ -515,9 +583,9 @@
       hideError('loginError');
       try {
         const cred = await googleSignIn();
-        updateAuthStateUI(cred?.user);
+        window.updateGlobalAuthUI(cred?.user);
       } catch (err) {
-        showError('loginError', err?.message || 'Google sign-in failed.');
+        showError('loginError', friendlyAuthError(err));
       }
     });
 
@@ -525,11 +593,43 @@
       hideError('signupError');
       try {
         const cred = await googleSignIn();
-        updateAuthStateUI(cred?.user);
+        window.updateGlobalAuthUI(cred?.user);
       } catch (err) {
-        showError('signupError', err?.message || 'Google sign-in failed.');
+        showError('signupError', friendlyAuthError(err));
       }
     });
+
+    // Reset Password
+    document.getElementById('forgotPasswordLink').addEventListener('click', async (e) => {
+      e.preventDefault();
+      hideError('loginError');
+      const email = document.getElementById('loginEmail').value.trim();
+      if (!email) {
+        showError('loginError', 'Enter your email above first, then click "Forgot password?".');
+        return;
+      }
+      try {
+        await resetPassword(email);
+        showError('loginError', 'Password reset email sent. Check your inbox.');
+      } catch (err) {
+        showError('loginError', friendlyAuthError(err));
+      }
+    });
+
+    function friendlyAuthError(err) {
+      const code = err && err.code ? err.code : '';
+      switch (code) {
+        case 'auth/email-already-in-use': return 'That email is already registered. Try logging in instead.';
+        case 'auth/invalid-email': return 'That email address looks invalid.';
+        case 'auth/weak-password': return 'Password should be at least 6 characters.';
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential': return 'Incorrect email or password.';
+        case 'auth/too-many-requests': return 'Too many attempts. Please wait and try again.';
+        case 'auth/popup-closed-by-user': return 'Google sign-in was cancelled.';
+        default: return (err && err.message) ? err.message : 'Something went wrong. Please try again.';
+      }
+    }
   </script>
 </body>
 </html>
