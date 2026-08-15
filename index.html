@@ -547,8 +547,8 @@
       
       setBusy('loginSubmitBtn', true, 'Signing in...', 'Sign In');
       try {
-        const cred = await logIn(email, password);
-        window.updateGlobalAuthUI(cred?.user || { email });
+        const user = await logIn(email, password);
+        window.updateGlobalAuthUI(user);
         e.target.reset();
       } catch (err) {
         showError('loginError', friendlyAuthError(err));
@@ -567,9 +567,9 @@
 
       setBusy('signupSubmitBtn', true, 'Creating account...', 'Create Account');
       try {
-        const cred = await signUp(name, email, password);
+        const user = await signUp(name, email, password);
         // Explicitly pass name to avoid Firebase display name delay
-        window.updateGlobalAuthUI(cred?.user || { email }, name);
+        window.updateGlobalAuthUI(user, name);
         e.target.reset();
       } catch (err) {
         showError('signupError', friendlyAuthError(err));
@@ -582,8 +582,8 @@
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
       hideError('loginError');
       try {
-        const cred = await googleSignIn();
-        window.updateGlobalAuthUI(cred?.user);
+        const user = await googleSignIn();
+        window.updateGlobalAuthUI(user);
       } catch (err) {
         showError('loginError', friendlyAuthError(err));
       }
@@ -592,8 +592,8 @@
     document.getElementById('googleSignupBtn').addEventListener('click', async () => {
       hideError('signupError');
       try {
-        const cred = await googleSignIn();
-        window.updateGlobalAuthUI(cred?.user);
+        const user = await googleSignIn();
+        window.updateGlobalAuthUI(user);
       } catch (err) {
         showError('signupError', friendlyAuthError(err));
       }
