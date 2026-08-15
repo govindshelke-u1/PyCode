@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Python? - PyCode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #e2e8f0; overflow-x: hidden; }
+    .code-font { font-family: 'Fira Code', monospace; }
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
+    @keyframes softGlow {
+      0%, 100% {
+        box-shadow: 0 0 8px 1px rgba(245, 158, 11, 0.25);
+        filter: brightness(1);
+      }
+      50% {
+        box-shadow: 0 0 16px 4px rgba(251, 191, 36, 0.5);
+        filter: brightness(1.08);
+      }
+    }
+
+    .animate-soft-glow {
+      animation: softGlow 2.5s infinite ease-in-out;
+    }
+    .glow-bg { animation: pulseGlow 8s ease-in-out infinite; }
+    .glass-card { background: rgba(18, 24, 38, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-200">
+
+  <!-- Background Ambient Glow -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none glow-bg"></div>
+  <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none glow-bg" style="animation-delay: -4s;"></div>
+
+  <div>
+    <!-- Compact Navigation Header -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-slate-800/80 bg-slate-950/80">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        <a href="index.html" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-yellow-400 flex items-center justify-center font-bold text-slate-950 text-base shadow-md">
+            <i class="fa-brands fa-python"></i>
+          </div>
+          <span class="text-lg font-bold tracking-tight text-white">Py<span class="text-yellow-400">Code</span></span>
+        </a>
+        <div class="hidden md:flex gap-6 text-xs font-semibold text-slate-300">
+          <a href="index.html" class="hover:text-yellow-400 transition">Home</a>
+          <a href="why-python.html" class="text-yellow-400">Why Python?</a>
+          <a href="curriculum.html" class="hover:text-yellow-400 transition">Curriculum</a>
+          <a href="what-needed.html" class="hover:text-yellow-400 transition">What-needed</a>
+        </div>
+        <a href="curriculum.html#enroll" class="px-4 py-2 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-yellow-500/20 flex items-center gap-1.5">
+          <span>Get Course @ ₹10</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Readable Narrative Container -->
+    <main class="max-w-3xl mx-auto px-6 py-8">
+      
+      <!-- Article Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3">
+          Why Learn <span class="bg-gradient-to-r from-yellow-400 via-amber-300 to-blue-400 bg-clip-text text-transparent">Python?</span>
+        </h1>
+        <p class="text-slate-300 text-base leading-relaxed">
+          Whether you are starting your coding journey or looking to add a powerful skill to your resume, Python is the #1 programming language to learn today.
+        </p>
+      </div>
+
+      <!-- Main Article Content in Glass Card -->
+      <div class="glass-card rounded-2xl p-6 md:p-8 space-y-6 text-slate-300 text-sm md:text-base leading-relaxed border border-slate-800">
+        
+        <!-- Point 1 -->
+        <div>
+          <h2 class="text-lg font-bold text-yellow-400 mb-1 flex items-center gap-2">
+            <span>1. Simple & Beginner-Friendly</span>
+          </h2>
+          <p class="mb-3 text-slate-300">
+            Python reads like plain English. Unlike other languages that require lines of complex setups, Python lets you focus on learning how to code without getting stuck in confusing syntax.
+          </p>
+          <ul class="space-y-1.5 text-slate-400 text-sm pl-2">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400 text-xs"></i> <span><strong class="text-slate-200">Easy to read:</strong> Clear and clean code structures.</span></li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400 text-xs"></i> <span><strong class="text-slate-200">Easy to learn:</strong> Write working programs in your very first week.</span></li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400 text-xs"></i> <span><strong class="text-slate-200">Write less, do more:</strong> Get results with fewer lines of code.</span></li>
+          </ul>
+        </div>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- Point 2 -->
+        <div>
+          <h2 class="text-lg font-bold text-yellow-400 mb-1">2. Unmatched Job Demand & Great Salaries</h2>
+          <p class="text-slate-300">
+            Python is one of the most in-demand skills in the tech industry today. Top global companies—including Google, Netflix, Spotify, NASA, and Instagram—rely heavily on Python to power their platforms.
+          </p>
+        </div>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- Point 3 -->
+        <div>
+          <h2 class="text-lg font-bold text-yellow-400 mb-1">3. Powering the Future: AI & Data Science</h2>
+          <p class="mb-2 text-slate-300">
+            If you want to work in cutting-edge technologies, Python is mandatory. It is the dominant language for:
+          </p>
+          <ul class="space-y-1.5 text-slate-400 text-sm pl-2">
+            <li class="flex items-start gap-2"><i class="fa-solid fa-angle-right text-blue-400 text-xs mt-1"></i> <span><strong class="text-slate-200">Artificial Intelligence & Machine Learning</strong> (ChatGPT, recommendation engines)</span></li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-angle-right text-blue-400 text-xs mt-1"></i> <span><strong class="text-slate-200">Data Science & Analytics</strong> (turning raw numbers into business insights)</span></li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-angle-right text-blue-400 text-xs mt-1"></i> <span><strong class="text-slate-200">Web Development</strong> (building fast, scalable websites)</span></li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-angle-right text-blue-400 text-xs mt-1"></i> <span><strong class="text-slate-200">Automation & Scripting</strong> (turning boring, repetitive tasks into single-click scripts)</span></li>
+          </ul>
+        </div>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- Point 4 -->
+        <div>
+          <h2 class="text-lg font-bold text-yellow-400 mb-1">4. Massive Pre-Built Tools ("Libraries")</h2>
+          <p class="text-slate-300">
+            You don't need to build everything from scratch. Python has over 400,000 free, ready-to-use packages. Want to build a website, analyze stock market data, or create a face-recognition system? There is already a free tool ready for you.
+          </p>
+        </div>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- Point 5 -->
+        <div>
+          <h2 class="text-lg font-bold text-yellow-400 mb-1">5. A Supportive Worldwide Community</h2>
+          <p class="text-slate-300">
+            When you learn Python, you are never alone. With millions of developers using it globally, any question or bug you run into has already been solved and answered online on platforms like Stack Overflow and GitHub.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Soft Glow CTA Button -->
+      <div class="flex justify-center pt-8">
+        <a href="curriculum.html" class="animate-soft-glow relative w-fit px-12 py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-base rounded-lg transition-transform duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+          <span>Start Learning @ ₹10</span>
+          <i class="fa-solid fa-bolt text-xs"></i>
+        </a>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

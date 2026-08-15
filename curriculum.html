@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curriculum - PyCode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #e2e8f0; overflow-x: hidden; }
+    .code-font { font-family: 'Fira Code', monospace; }
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
+    @keyframes softGlow {
+    0%, 100% {
+      box-shadow: 0 0 8px 1px rgba(245, 158, 11, 0.25);
+      filter: brightness(1);
+    }
+    50% {
+      box-shadow: 0 0 16px 4px rgba(251, 191, 36, 0.5);
+      filter: brightness(1.08);
+    }
+  }
+
+  .animate-soft-glow {
+    animation: softGlow 2.5s infinite ease-in-out;
+  }
+    .glow-bg { animation: pulseGlow 8s ease-in-out infinite; }
+    .glass-card { background: rgba(18, 24, 38, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card:hover { border-color: rgba(234, 179, 8, 0.3); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-200">
+
+  <!-- Background Ambient Glow -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none glow-bg"></div>
+  <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none glow-bg" style="animation-delay: -4s;"></div>
+
+  <div>
+    <!-- Compact Navigation Header -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-slate-800/80 bg-slate-950/80">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        <a href="index.html" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-yellow-400 flex items-center justify-center font-bold text-slate-950 text-base shadow-md">
+            <i class="fa-brands fa-python"></i>
+          </div>
+          <span class="text-lg font-bold tracking-tight text-white">Py<span class="text-yellow-400">Code</span></span>
+        </a>
+        <div class="hidden md:flex gap-6 text-xs font-semibold text-slate-300">
+          <a href="index.html" class="hover:text-yellow-400 transition">Home</a>
+          <a href="why-python.html" class="hover:text-yellow-400 transition">Why Python?</a>
+          <a href="curriculum.html" class="text-yellow-400">Curriculum</a>
+          <a href="what-needed.html" class="hover:text-yellow-400 transition">What-needed</a>
+          
+        </div>
+        <a href="#enroll" class="px-4 py-2 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-yellow-500/20 flex items-center gap-1.5">
+          <span>Get Course @ ₹10</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Page Title -->
+    <section class="max-w-5xl mx-auto px-6 pt-5 pb-3 text-center">
+      <h1 class="text-2xl md:text-3xl font-extrabold text-white">
+        Python Learning <span class="bg-gradient-to-r from-yellow-400 via-amber-300 to-blue-400 bg-clip-text text-transparent">Curriculum</span>
+      </h1>
+    </section>
+
+    <!-- Clean Sequential Modules List (1 to 7) -->
+    <main class="max-w-4xl mx-auto px-6 py-2 space-y-2.5">
+      
+      <!-- 01. Variable & Data Type -->
+      <div class="glass-card rounded-xl px-4 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-yellow-400/10 text-yellow-400 font-bold flex items-center justify-center text-sm border border-yellow-400/20 shrink-0">01</span>
+          <h3 class="text-base font-bold text-white">Variable & Data Type</h3>
+        </div>
+        <div class="flex gap-2 text-[11px] font-mono text-slate-400">
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">int, float, str, bool</span>
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">input()</span>
+        </div>
+      </div>
+
+      <!-- 02. Condition -->
+      <div class="glass-card rounded-xl px-4 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 font-bold flex items-center justify-center text-sm border border-blue-500/20 shrink-0">02</span>
+          <h3 class="text-base font-bold text-white">Condition</h3>
+        </div>
+        <div class="flex gap-2 text-[11px] font-mono text-slate-400">
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">if / elif / else</span>
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">and / or / not</span>
+        </div>
+      </div>
+
+      <!-- 03. List & Tuples -->
+      <div class="glass-card rounded-xl px-4 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold flex items-center justify-center text-sm border border-emerald-500/20 shrink-0">03</span>
+          <h3 class="text-base font-bold text-white">List & Tuples</h3>
+        </div>
+        <div class="flex gap-2 text-[11px] font-mono text-slate-400">
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">[List]</span>
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">(Tuple)</span>
+        </div>
+      </div>
+
+      <!-- 04. Dictionary & Set -->
+      <div class="glass-card rounded-xl px-4 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 font-bold flex items-center justify-center text-sm border border-purple-500/20 shrink-0">04</span>
+          <h3 class="text-base font-bold text-white">Dictionary & Set</h3>
+        </div>
+        <div class="flex gap-2 text-[11px] font-mono text-slate-400">
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">{key: val}</span>
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">{Set}</span>
+        </div>
+      </div>
+
+      <!-- 05. Loops -->
+      <div class="glass-card rounded-xl px-4 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 font-bold flex items-center justify-center text-sm border border-amber-500/20 shrink-0">05</span>
+          <h3 class="text-base font-bold text-white">Loops</h3>
+        </div>
+        <div class="flex gap-2 text-[11px] font-mono text-slate-400">
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">for / range()</span>
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">while</span>
+        </div>
+      </div>
+
+      <!-- 06. Functions -->
+      <div class="glass-card rounded-xl px-4 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-cyan-500/10 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/20 shrink-0">06</span>
+          <h3 class="text-base font-bold text-white">Functions</h3>
+        </div>
+        <div class="flex gap-2 text-[11px] font-mono text-slate-400">
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">def my_func()</span>
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">return</span>
+        </div>
+      </div>
+
+      <!-- 07. File I/O -->
+      <div class="glass-card rounded-xl px-4 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-400 font-bold flex items-center justify-center text-sm border border-rose-500/20 shrink-0">07</span>
+          <h3 class="text-base font-bold text-white">File I/O</h3>
+        </div>
+        <div class="flex gap-2 text-[11px] font-mono text-slate-400">
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">open()</span>
+          <span class="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">read() / write()</span>
+        </div>
+      </div>
+
+
+  <div class="flex justify-center p-4">
+  <button onclick="alert('Redirecting to Enrollment Page...')" class="animate-soft-glow relative w-fit px-12 py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-base rounded-lg transition-transform duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+    <span>Enroll Now</span>
+    <i class="fa-solid fa-bolt text-xs"></i>
+  </button>
+</div>
+
+     
+ 
+  
+
+
+
+    </main>
+  </div>
+
+</body>
+</html>
