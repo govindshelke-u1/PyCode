@@ -11,7 +11,7 @@
 // This is what keeps the login modal from getting "stuck" if your
 // Firestore/RTDB rules reject a write.
 
-import { auth, db, rtdb } from "./firebase-init.js?v=4";
+import { auth, db, rtdb } from "./firebase-init.js?v=5";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -108,11 +108,17 @@ async function verifyAgainstRtdb(user) {
 /* ------------------------------------------------------------------ */
 
 export async function signUp(name, email, password) {
+  console.log('[auth.js] creating auth account...');
   const cred = await createUserWithEmailAndPassword(auth, email, password);
+  console.log('[auth.js] auth account created, uid:', cred.user.uid);
   if (name) {
+    console.log('[auth.js] setting display name...');
     await updateProfile(cred.user, { displayName: name });
+    console.log('[auth.js] display name set');
   }
+  console.log('[auth.js] syncing profile to Firestore/RTDB...');
   await saveUserRecord(cred.user, { name, isNew: true });
+  console.log('[auth.js] signUp complete');
   return cred.user;
 }
 
