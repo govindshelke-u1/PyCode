@@ -96,6 +96,23 @@
               Curriculum
             </a>
           </div>
+
+          <!-- Your Progress (shown only when logged in) -->
+          <div id="progressCard" class="hidden glass-card rounded-2xl p-5 border border-slate-700/60 max-w-md">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Your Progress</span>
+              <span class="text-xs font-mono font-bold text-yellow-400">
+                <i class="fa-solid fa-star text-[10px] mr-1"></i><span id="progressPoints">0</span> / <span id="progressMaxPoints">15</span> pts
+              </span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+              <div id="progressBarFill" class="bg-gradient-to-r from-yellow-400 to-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex items-center justify-between mt-2 text-[11px] text-slate-400">
+              <span id="progressModulesText">0 of 3 modules completed</span>
+              <span id="progressPercentText" class="font-bold text-emerald-400">0%</span>
+            </div>
+          </div>
         </div>
 
         <!-- Animated Terminal -->
@@ -435,6 +452,9 @@
         if (terminalName) terminalName.textContent = `"Future Developer"`;
         if (enrollBtnText) enrollBtnText.textContent = "Enroll Now @ ₹10";
         activeStudentName = "Future Developer";
+
+        const progressCard = document.getElementById('progressCard');
+        if (progressCard) progressCard.classList.add('hidden');
       }
     };
 
@@ -539,6 +559,7 @@
     import { auth, db } from "./assets/firebase-init.js?v=8";
     import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js?v=8";
     import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+    import { getUserProgress } from "./assets/progress.js?v=1";
 
     let suppressAutoAuthUI = false;
 
@@ -563,11 +584,34 @@ async function syncUserStatus(user) {
   }
 }
 
+    // Fetches the user's points/completion and updates the progress card
+    async function renderProgress(user) {
+      const card = document.getElementById('progressCard');
+      if (!user) {
+        if (card) card.classList.add('hidden');
+        return;
+      }
+      const progress = await getUserProgress(db, user.uid);
+
+      document.getElementById('progressPoints').textContent = progress.totalPoints;
+      document.getElementById('progressMaxPoints').textContent = progress.maxPoints;
+      document.getElementById('progressModulesText').textContent =
+        `${progress.completedCount} of ${progress.totalModules} modules completed`;
+      document.getElementById('progressPercentText').textContent = `${progress.percent}%`;
+      document.getElementById('progressBarFill').style.width = `${progress.percent}%`;
+
+      if (card) card.classList.remove('hidden');
+    }
+
     // Runs on page load and session restoration
 initAuthUI(async (user) => {
+  if (suppressAutoAuthUI) return;
   window.updateGlobalAuthUI(user);
   if (user) {
     await syncUserStatus(user);
+    await renderProgress(user);
+  } else {
+    await renderProgress(null);
   }
 });
 
@@ -613,6 +657,7 @@ initAuthUI(async (user) => {
   const password = document.getElementById('loginPassword').value;
   
   setBusy('loginSubmitBtn', true, 'Signing in...', 'Sign In');
+  suppressAutoAuthUI = true;
   try {
     const user = await withUITimeout(logIn(email, password), 10000, 'Sign in');
     window.closeModal('loginModal');
@@ -620,12 +665,14 @@ initAuthUI(async (user) => {
     
     // Sync Firestore data immediately so UI mutates instantly
     await syncUserStatus(user);
+    await renderProgress(user);
     
     window.showToast(`Welcome back, ${user.displayName || email.split('@')[0]}!`);
     e.target.reset();
   } catch (err) {
     showError('loginError', friendlyAuthError(err));
   } finally {
+    suppressAutoAuthUI = false;
     setBusy('loginSubmitBtn', false, 'Signing in...', 'Sign In');
   }
 });
@@ -645,6 +692,7 @@ initAuthUI(async (user) => {
         const user = await withUITimeout(signUp(name, email, password), 10000, 'Account creation');
         window.closeModal('signupModal');
         window.updateGlobalAuthUI(user, name);
+        await renderProgress(user);
         window.showToast(`Welcome, ${name}! Your account has been created.`);
         e.target.reset();
       } catch (err) {
@@ -657,44 +705,37 @@ initAuthUI(async (user) => {
 //Googel Singin
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
   hideError('loginError');
+  suppressAutoAuthUI = true;
   try {
     const user = await googleSignIn();
     window.closeModal('loginModal');
     window.updateGlobalAuthUI(user);
     await syncUserStatus(user);
+    await renderProgress(user);
     window.showToast(`Welcome, ${user.displayName || user.email}!`);
   } catch (err) {
     showError('loginError', friendlyAuthError(err));
+  } finally {
+    suppressAutoAuthUI = false;
   }
 });
 
 document.getElementById('googleSignupBtn').addEventListener('click', async () => {
   hideError('signupError');
+  suppressAutoAuthUI = true;
   try {
     const user = await googleSignIn();
     window.closeModal('signupModal');
     window.updateGlobalAuthUI(user);
     await syncUserStatus(user);
+    await renderProgress(user);
     window.showToast(`Welcome, ${user.displayName || user.email}!`);
   } catch (err) {
     showError('signupError', friendlyAuthError(err));
+  } finally {
+    suppressAutoAuthUI = false;
   }
 });
-
-    document.getElementById('googleSignupBtn').addEventListener('click', async () => {
-      hideError('signupError');
-      suppressAutoAuthUI = true;
-      try {
-        const user = await googleSignIn();
-        window.closeModal('signupModal');
-        window.updateGlobalAuthUI(user);
-        window.showToast(`Welcome, ${user.displayName || user.email}!`);
-      } catch (err) {
-        showError('signupError', friendlyAuthError(err));
-      } finally {
-        suppressAutoAuthUI = false;
-      }
-    });
 
     // Forgot Password
     document.getElementById('forgotPasswordLink').addEventListener('click', async (e) => {
