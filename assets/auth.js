@@ -11,7 +11,7 @@
 // This is what keeps the login modal from getting "stuck" if your
 // Firestore/RTDB rules reject a write.
 
-import { auth, db, rtdb } from "./firebase-init.js?v=7";
+import { auth, db, rtdb } from "./firebase-init.js?v=8";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -108,35 +108,20 @@ async function verifyAgainstRtdb(user) {
 /* ------------------------------------------------------------------ */
 
 export async function signUp(name, email, password) {
-  console.time('[timing] total signUp');
-  console.time('[timing] createUserWithEmailAndPassword');
   const cred = await createUserWithEmailAndPassword(auth, email, password);
-  console.timeEnd('[timing] createUserWithEmailAndPassword');
-
   if (name) {
-    console.time('[timing] updateProfile');
     await updateProfile(cred.user, { displayName: name });
-    console.timeEnd('[timing] updateProfile');
   }
-
   // Fire-and-forget: don't make the user wait on Firestore/RTDB writes.
   saveUserRecord(cred.user, { name, isNew: true });
-
-  console.timeEnd('[timing] total signUp');
   return cred.user;
 }
 
 export async function logIn(email, password) {
-  console.time('[timing] total logIn');
-  console.time('[timing] signInWithEmailAndPassword');
   const cred = await signInWithEmailAndPassword(auth, email, password);
-  console.timeEnd('[timing] signInWithEmailAndPassword');
-
   // Fire-and-forget: verification + last-login stamping happen in the
   // background so the user isn't stuck waiting on Firestore/RTDB.
   syncAfterLogin(cred.user);
-
-  console.timeEnd('[timing] total logIn');
   return cred.user;
 }
 
