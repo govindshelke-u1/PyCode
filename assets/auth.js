@@ -11,7 +11,7 @@
 // This is what keeps the login modal from getting "stuck" if your
 // Firestore/RTDB rules reject a write.
 
-import { auth, db, rtdb } from "./firebase-init.js";
+import { auth, db, rtdb } from "./firebase-init.js?v=3";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
