@@ -527,7 +527,7 @@
 
   <!-- Auth Module Integration -->
   <script type="module">
-    import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js?v=4";
+    import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js?v=5";
 
     // While a sign-up/login/google flow is actively running, the automatic
     // onAuthStateChanged listener below can fire mid-flight (e.g. right
@@ -573,6 +573,18 @@
       }
     }
 
+    // Outer safety net: even if something inside auth.js hangs for any
+    // reason, this guarantees the UI recovers within `ms` instead of
+    // staying stuck forever.
+    function withUITimeout(promise, ms, label) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error(`${label} is taking too long. Check your internet connection and try again.`)), ms)
+        )
+      ]);
+    }
+
     // Log In Form Submission
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -583,7 +595,7 @@
       setBusy('loginSubmitBtn', true, 'Signing in...', 'Sign In');
       suppressAutoAuthUI = true;
       try {
-        const user = await logIn(email, password);
+        const user = await withUITimeout(logIn(email, password), 10000, 'Sign in');
         window.closeModal('loginModal');
         window.updateGlobalAuthUI(user);
         window.showToast(`Welcome back, ${user.displayName || email.split('@')[0]}!`);
@@ -607,14 +619,17 @@
       setBusy('signupSubmitBtn', true, 'Creating account...', 'Create Account');
       suppressAutoAuthUI = true;
       if (name) localStorage.setItem('pycode_user_name', name);
+      console.log('[signup] starting for', email);
       try {
-        const user = await signUp(name, email, password);
+        const user = await withUITimeout(signUp(name, email, password), 10000, 'Account creation');
+        console.log('[signup] success, uid:', user.uid);
         window.closeModal('signupModal');
         // Explicitly pass name to avoid Firebase display name delay
         window.updateGlobalAuthUI(user, name);
         window.showToast(`Welcome, ${name}! Your account has been created.`);
         e.target.reset();
       } catch (err) {
+        console.error('[signup] failed:', err);
         showError('signupError', friendlyAuthError(err));
       } finally {
         suppressAutoAuthUI = false;
