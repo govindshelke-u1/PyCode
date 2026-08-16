@@ -23,7 +23,7 @@ const firebaseConfig = {
   appId: "1:500087801800:web:efa1a340c222551ed862fd",
   // Realtime Database needs its own URL. Update this if your RTDB
   // instance URL is different (check Firebase console > Realtime Database).
-  databaseURL: "https://pycode-51450-default-rtdb.firebaseio.com"
+  databaseURL: "https://pycode-51450-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 export const app = initializeApp(firebaseConfig);
