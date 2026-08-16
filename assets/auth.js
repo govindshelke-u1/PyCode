@@ -11,7 +11,7 @@
 // This is what keeps the login modal from getting "stuck" if your
 // Firestore/RTDB rules reject a write.
 
-import { auth, db, rtdb } from "./firebase-init.js?v=6";
+import { auth, db, rtdb } from "./firebase-init.js?v=7";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -108,32 +108,35 @@ async function verifyAgainstRtdb(user) {
 /* ------------------------------------------------------------------ */
 
 export async function signUp(name, email, password) {
-  console.log('[auth.js] creating auth account...');
+  console.time('[timing] total signUp');
+  console.time('[timing] createUserWithEmailAndPassword');
   const cred = await createUserWithEmailAndPassword(auth, email, password);
-  console.log('[auth.js] auth account created, uid:', cred.user.uid);
+  console.timeEnd('[timing] createUserWithEmailAndPassword');
+
   if (name) {
-    console.log('[auth.js] setting display name...');
+    console.time('[timing] updateProfile');
     await updateProfile(cred.user, { displayName: name });
-    console.log('[auth.js] display name set');
+    console.timeEnd('[timing] updateProfile');
   }
+
   // Fire-and-forget: don't make the user wait on Firestore/RTDB writes.
-  // The account is fully usable already; the profile sync happens
-  // quietly in the background (it's already fault-tolerant + timed out
-  // internally by saveUserRecord).
   saveUserRecord(cred.user, { name, isNew: true });
-  console.log('[auth.js] signUp complete (profile sync continues in background)');
+
+  console.timeEnd('[timing] total signUp');
   return cred.user;
 }
 
 export async function logIn(email, password) {
-  console.log('[auth.js] signing in...');
+  console.time('[timing] total logIn');
+  console.time('[timing] signInWithEmailAndPassword');
   const cred = await signInWithEmailAndPassword(auth, email, password);
-  console.log('[auth.js] signed in, uid:', cred.user.uid);
+  console.timeEnd('[timing] signInWithEmailAndPassword');
 
   // Fire-and-forget: verification + last-login stamping happen in the
   // background so the user isn't stuck waiting on Firestore/RTDB.
   syncAfterLogin(cred.user);
 
+  console.timeEnd('[timing] total logIn');
   return cred.user;
 }
 
