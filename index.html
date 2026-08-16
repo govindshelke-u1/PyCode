@@ -40,7 +40,7 @@
           <span class="text-xl font-bold tracking-tight text-white">Py<span class="text-yellow-400">Code</span></span>
         </a>
 
-        <!-- Public Navigation Links -->
+        <!-- Navigation Links -->
         <div class="hidden md:flex gap-8 text-sm font-semibold text-slate-300">
           <a href="index.html" class="text-yellow-400">Home</a>
           <a href="why-python.html" class="hover:text-yellow-400 transition">Why Python?</a>
@@ -49,7 +49,7 @@
         
         <!-- Auth Profile Badge & Action Button -->
         <div class="flex items-center gap-3">
-          <!-- User Profile Display (Shown when logged in) -->
+          <!-- User Profile Display -->
           <div id="userProfileBadge" class="hidden items-center gap-2 bg-slate-900 border border-slate-700/80 rounded-xl p-1.5 pl-3.5 shadow-sm">
             <span class="text-xs font-semibold text-yellow-400 flex items-center gap-2">
               <i class="fa-solid fa-circle-user text-sm"></i>
@@ -60,7 +60,7 @@
             </button>
           </div>
 
-          <!-- Log In / Sign In Button (Shown when logged out) -->
+          <!-- Log In / Sign In Button -->
           <button id="loginTrigger" type="button" class="px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-sm rounded-xl transition shadow-lg shadow-yellow-500/20 flex items-center gap-2 cursor-pointer">
             <i class="fa-solid fa-right-to-bracket text-xs pointer-events-none"></i>
             <span>Log in/Sign in</span>
@@ -88,9 +88,9 @@
           </p>
 
           <div class="flex flex-wrap gap-4 pt-2">
-            <!-- Protected Enroll Button -->
             <button id="enrollTrigger" type="button" class="px-7 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold rounded-xl shadow-lg shadow-yellow-400/20 transition flex items-center gap-2 cursor-pointer">
-              Enroll Now <i class="fa-solid fa-arrow-right text-xs pointer-events-none"></i>
+              <span id="enrollBtnText">Enroll Now @ ₹10</span>
+              <i class="fa-solid fa-arrow-right text-xs pointer-events-none"></i>
             </button>
             <a href="curriculum.html" class="px-7 py-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold rounded-xl transition">
               Curriculum
@@ -253,7 +253,7 @@
     </div>
   </div>
 
-  <!-- OVERLAY 2: ENROLL / PAYMENT PORTAL MODAL -->
+  <!-- OVERLAY 2: PAYMENT PORTAL MODAL -->
   <div id="paymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
     <div class="glass-card w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-700/80 relative max-h-[90vh] overflow-y-auto">
       <button type="button" onclick="closeModal('paymentModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white transition w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-800 cursor-pointer">
@@ -282,7 +282,8 @@
         </div>
       </div>
 
-      <form onsubmit="event.preventDefault(); window.location.href='Wellcome.html';" class="space-y-4">
+      <!-- Payment Form Connected to JavaScript Handlers -->
+      <form id="paymentForm" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-2">Select Payment Method</label>
           <div class="grid grid-cols-3 gap-2">
@@ -328,7 +329,7 @@
           </div>
         </div>
 
-        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-yellow-500/20 transition text-sm flex items-center justify-center gap-2 mt-2 cursor-pointer">
+        <button id="paymentSubmitBtn" type="submit" class="w-full py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-yellow-500/20 transition text-sm flex items-center justify-center gap-2 mt-2 cursor-pointer">
           <i class="fa-solid fa-lock text-xs pointer-events-none"></i> Complete Payment • ₹10
         </button>
 
@@ -339,7 +340,7 @@
     </div>
   </div>
 
-  <!-- Toast Notification Container (bottom-right) -->
+  <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 items-end"></div>
 
   <!-- Footer -->
@@ -357,7 +358,7 @@
     </div>
   </footer>
 
-  <!-- Synchronous Core Engine: Resets state, handles UI events -->
+  <!-- State & Modal Controls -->
   <script>
     window.isUserLoggedIn = false;
     let activeStudentName = localStorage.getItem('pycode_user_name') || "Future Developer";
@@ -391,12 +392,13 @@
     }
     typeEffect();
 
-    // Central UI Updater
+    // Central UI updater
     window.updateGlobalAuthUI = function(user, explicitName) {
       const loginTrigger = document.getElementById('loginTrigger');
       const userProfileBadge = document.getElementById('userProfileBadge');
       const userNameDisplay = document.getElementById('userNameDisplay');
       const terminalName = document.getElementById('terminalStudentName');
+      const enrollBtnText = document.getElementById('enrollBtnText');
 
       if (user) {
         window.isUserLoggedIn = true;
@@ -412,12 +414,18 @@
         if (terminalName) terminalName.textContent = `"${name}"`;
         activeStudentName = name;
 
-        // Ensure all modals close on success
+        // Check if enrolled and update button text
+        const isEnrolled = localStorage.getItem('pycode_enrolled') === 'true';
+        if (isEnrolled && enrollBtnText) {
+          enrollBtnText.textContent = "Resume Learning";
+        }
+
         window.closeModal('loginModal');
         window.closeModal('signupModal');
       } else {
         window.isUserLoggedIn = false;
         localStorage.removeItem('pycode_user_name');
+        localStorage.removeItem('pycode_enrolled');
 
         if (userProfileBadge) {
           userProfileBadge.classList.add('hidden');
@@ -425,11 +433,11 @@
         }
         if (loginTrigger) loginTrigger.classList.remove('hidden');
         if (terminalName) terminalName.textContent = `"Future Developer"`;
+        if (enrollBtnText) enrollBtnText.textContent = "Enroll Now @ ₹10";
         activeStudentName = "Future Developer";
       }
     };
 
-    // ---- Toast notifications (bottom-right) ----
     window.showToast = function(message, type = 'success') {
       const container = document.getElementById('toastContainer');
       if (!container) return;
@@ -446,7 +454,6 @@
       }, 3500);
     };
 
-    // Helper: Reset button state & errors when opening modals
     function resetFormState(modalId) {
       if (modalId === 'loginModal') {
         const btn = document.getElementById('loginSubmitBtn');
@@ -461,7 +468,6 @@
       }
     }
 
-    // Modal Control Functions
     window.openModal = function(modalId) {
       resetFormState(modalId);
       const modal = document.getElementById(modalId);
@@ -479,7 +485,6 @@
       }
     };
 
-    // Close Modal via ESC & Backdrop
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeModal('loginModal');
@@ -496,7 +501,6 @@
       }
     });
 
-    // Modal Switching Links
     document.getElementById('openSignupFromLogin').addEventListener('click', (e) => {
       e.preventDefault();
       closeModal('loginModal');
@@ -509,35 +513,62 @@
       openModal('loginModal');
     });
 
-    // Open Login Modal
     document.getElementById('loginTrigger').addEventListener('click', () => {
       openModal('loginModal');
     });
 
-    // ENROLL NOW: Dynamic check
+    // Dynamic enroll trigger: If enrolled -> go to resume lesson, else -> open payment or login
     document.getElementById('enrollTrigger').addEventListener('click', (e) => {
       e.preventDefault();
-      if (window.isUserLoggedIn) {
-        openModal('paymentModal');
-      } else {
+      if (!window.isUserLoggedIn) {
         openModal('loginModal');
+      } else {
+        const isEnrolled = localStorage.getItem('pycode_enrolled') === 'true';
+        if (isEnrolled) {
+          const lastLesson = localStorage.getItem('pycode_last_lesson') || 'Wellcome.html';
+          window.location.href = lastLesson;
+        } else {
+          openModal('paymentModal');
+        }
       }
     });
   </script>
 
-  <!-- Auth Module Integration -->
+  <!-- Auth & Firebase Integration -->
   <script type="module">
+    import { auth, db } from "./assets/firebase-init.js?v=8";
     import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js?v=8";
+    import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
     let suppressAutoAuthUI = false;
 
-    // Subscribe to Firebase Auth state listener
-    initAuthUI((user) => {
+    // Listen for authentication state & sync progress from Firestore
+    initAuthUI(async (user) => {
       if (suppressAutoAuthUI) return;
       window.updateGlobalAuthUI(user);
+
+      if (user) {
+        // Sync enrollment and progress from Firestore
+        try {
+          const snap = await getDoc(doc(db, "users", user.uid));
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.enrolled) {
+              localStorage.setItem('pycode_enrolled', 'true');
+              const enrollBtnText = document.getElementById('enrollBtnText');
+              if (enrollBtnText) enrollBtnText.textContent = "Resume Learning";
+            }
+            if (data.lastLesson) {
+              localStorage.setItem('pycode_last_lesson', data.lastLesson);
+            }
+          }
+        } catch (e) {
+          console.warn("[sync] error reading progress from firestore:", e);
+        }
+      }
     });
 
-    // Log Out Trigger
+    // Log Out
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       try {
         await logOut();
@@ -549,10 +580,7 @@
 
     function showError(elId, message) {
       const el = document.getElementById(elId);
-      if (el) {
-        el.textContent = message;
-        el.classList.remove('hidden');
-      }
+      if (el) { el.textContent = message; el.classList.remove('hidden'); }
     }
     function hideError(elId) {
       const el = document.getElementById(elId);
@@ -575,7 +603,7 @@
       ]);
     }
 
-    // Log In Form Submission
+    // Log In Form
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       hideError('loginError');
@@ -598,7 +626,7 @@
       }
     });
 
-    // Sign Up Form Submission
+    // Sign Up Form
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       hideError('signupError');
@@ -654,7 +682,7 @@
       }
     });
 
-    // Reset Password
+    // Forgot Password
     document.getElementById('forgotPasswordLink').addEventListener('click', async (e) => {
       e.preventDefault();
       hideError('loginError');
@@ -669,6 +697,36 @@
       } catch (err) {
         showError('loginError', friendlyAuthError(err));
       }
+    });
+
+    // Payment Form Handler (Stores enrollment to Firestore & localStorage)
+    document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (!user) {
+        window.openModal('loginModal');
+        return;
+      }
+
+      setBusy('paymentSubmitBtn', true, 'Processing...', 'Complete Payment • ₹10');
+
+      // 1. Mark in client storage
+      localStorage.setItem('pycode_enrolled', 'true');
+      localStorage.setItem('pycode_last_lesson', 'Module1/M01-L01.html');
+
+      // 2. Persist to Firestore
+      try {
+        await setDoc(doc(db, "users", user.uid), {
+          enrolled: true,
+          enrolledAt: serverTimestamp(),
+          lastLesson: "Module1/M01-L01.html"
+        }, { merge: true });
+      } catch (err) {
+        console.warn("Enrollment save error:", err);
+      }
+
+      window.closeModal('paymentModal');
+      window.location.href = "Wellcome.html";
     });
 
     function friendlyAuthError(err) {
