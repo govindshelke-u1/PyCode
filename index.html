@@ -17,6 +17,11 @@
     .glow-bg { animation: pulseGlow 8s ease-in-out infinite; }
     .glass-card { background: rgba(18, 24, 38, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
     .modal-backdrop { background: rgba(5, 8, 15, 0.85); backdrop-filter: blur(8px); }
+
+    @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes toastOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
+    .toast { animation: toastIn 0.25s ease-out forwards; }
+    .toast.toast-leaving { animation: toastOut 0.25s ease-in forwards; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -334,6 +339,9 @@
     </div>
   </div>
 
+  <!-- Toast Notification Container (bottom-right) -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 items-end"></div>
+
   <!-- Footer -->
   <footer class="border-t border-slate-800/80 bg-slate-950 py-4">
     <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
@@ -421,6 +429,23 @@
       }
     };
 
+    // ---- Toast notifications (bottom-right) ----
+    window.showToast = function(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      const iconClass = type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation text-red-400';
+      toast.className = 'toast glass-card border border-slate-700/80 rounded-xl px-4 py-3 shadow-2xl flex items-center gap-3 text-sm text-slate-100 max-w-xs';
+      toast.innerHTML = `<i class="fa-solid ${iconClass}"></i><span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('toast-leaving');
+        setTimeout(() => toast.remove(), 250);
+      }, 3500);
+    };
+
     // Helper: Reset button state & errors when opening modals
     function resetFormState(modalId) {
       if (modalId === 'loginModal') {
@@ -502,7 +527,7 @@
 
   <!-- Auth Module Integration -->
   <script type="module">
-    import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js?v=3";
+    import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js?v=4";
 
     // While a sign-up/login/google flow is actively running, the automatic
     // onAuthStateChanged listener below can fire mid-flight (e.g. right
@@ -559,7 +584,9 @@
       suppressAutoAuthUI = true;
       try {
         const user = await logIn(email, password);
+        window.closeModal('loginModal');
         window.updateGlobalAuthUI(user);
+        window.showToast(`Welcome back, ${user.displayName || email.split('@')[0]}!`);
         e.target.reset();
       } catch (err) {
         showError('loginError', friendlyAuthError(err));
@@ -582,8 +609,10 @@
       if (name) localStorage.setItem('pycode_user_name', name);
       try {
         const user = await signUp(name, email, password);
+        window.closeModal('signupModal');
         // Explicitly pass name to avoid Firebase display name delay
         window.updateGlobalAuthUI(user, name);
+        window.showToast(`Welcome, ${name}! Your account has been created.`);
         e.target.reset();
       } catch (err) {
         showError('signupError', friendlyAuthError(err));
@@ -599,7 +628,9 @@
       suppressAutoAuthUI = true;
       try {
         const user = await googleSignIn();
+        window.closeModal('loginModal');
         window.updateGlobalAuthUI(user);
+        window.showToast(`Welcome, ${user.displayName || user.email}!`);
       } catch (err) {
         showError('loginError', friendlyAuthError(err));
       } finally {
@@ -612,7 +643,9 @@
       suppressAutoAuthUI = true;
       try {
         const user = await googleSignIn();
+        window.closeModal('signupModal');
         window.updateGlobalAuthUI(user);
+        window.showToast(`Welcome, ${user.displayName || user.email}!`);
       } catch (err) {
         showError('signupError', friendlyAuthError(err));
       } finally {
