@@ -52,7 +52,7 @@
           <span class="text-lg font-bold tracking-tight text-white">Py<span class="text-yellow-400">Code</span></span>
         </a>
 
-        <!-- Public Navigation Links (What-needed removed) -->
+        <!-- Navigation Links -->
         <div class="hidden md:flex gap-6 text-xs font-semibold text-slate-300">
           <a href="index.html" class="hover:text-yellow-400 transition">Home</a>
           <a href="why-python.html" class="text-yellow-400 font-semibold">Why Python?</a>
@@ -60,7 +60,7 @@
         </div>
         
         <div class="flex items-center gap-3">
-          <!-- User Profile Display (Shown when logged in) -->
+          <!-- User Profile Display -->
           <div id="userProfileBadge" class="hidden items-center gap-2 bg-slate-900 border border-slate-700/80 rounded-xl p-1.5 pl-3 shadow-sm">
             <span class="text-xs font-semibold text-yellow-400 flex items-center gap-1.5">
               <i class="fa-solid fa-circle-user text-sm"></i>
@@ -71,13 +71,13 @@
             </button>
           </div>
 
-          <!-- Log In Button (Shown when logged out) -->
+          <!-- Log In Button -->
           <button id="loginTrigger" type="button" class="hidden px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold text-xs rounded-lg transition items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-right-to-bracket text-xs pointer-events-none"></i>
             <span>Log in</span>
           </button>
 
-          <!-- Top Action Enroll Button -->
+          <!-- Top Navbar Enroll Trigger -->
           <button id="navEnrollBtn" type="button" class="px-4 py-2 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-yellow-500/20 flex items-center gap-1.5 cursor-pointer">
             <span>Get Course @ ₹10</span>
           </button>
@@ -85,10 +85,10 @@
       </div>
     </nav>
 
-    <!-- Main Readable Narrative Container -->
+    <!-- Main Narrative Container -->
     <main class="max-w-3xl mx-auto px-6 py-8">
       
-      <!-- Article Header -->
+      <!-- Header -->
       <div class="text-center mb-8">
         <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3">
           Why Learn <span class="bg-gradient-to-r from-yellow-400 via-amber-300 to-blue-400 bg-clip-text text-transparent">Python?</span>
@@ -98,7 +98,7 @@
         </p>
       </div>
 
-      <!-- Main Article Content in Glass Card -->
+      <!-- Main Article Glass Card -->
       <div class="glass-card rounded-2xl p-6 md:p-8 space-y-6 text-slate-300 text-sm md:text-base leading-relaxed border border-slate-800">
         
         <!-- Point 1 -->
@@ -164,7 +164,7 @@
 
       </div>
 
-      <!-- Main Action Button -->
+      <!-- Main Bottom Enroll Trigger -->
       <div class="flex justify-center pt-8">
         <button id="mainEnrollBtn" type="button" class="animate-soft-glow relative w-fit px-12 py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-base rounded-xl transition-transform duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-yellow-500/20">
           <span>Start Learning @ ₹10</span>
@@ -520,7 +520,7 @@
       openModal('loginModal');
     });
 
-    // Unified Enrollment Trigger Logic
+    // Unified Enrollment Logic for both buttons
     function handleEnrollClick(e) {
       e.preventDefault();
       if (window.isUserLoggedIn) {
