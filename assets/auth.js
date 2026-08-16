@@ -11,7 +11,7 @@
 // This is what keeps the login modal from getting "stuck" if your
 // Firestore/RTDB rules reject a write.
 
-import { auth, db, rtdb } from "./firebase-init.js?v=3";
+import { auth, db, rtdb } from "./firebase-init.js?v=4";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -42,6 +42,19 @@ import {
 /* Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
+// Wraps a promise so it can never hang the caller forever. If it doesn't
+// settle within `ms`, we treat it as failed and move on — this protects
+// the whole login/signup flow from a misconfigured or unreachable
+// Realtime Database / Firestore connection (e.g. wrong databaseURL).
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    )
+  ]);
+}
+
 // Write the same profile into Firestore + Realtime Database.
 // Best-effort: logs a warning instead of throwing, so a rules problem
 // here never blocks the actual sign-in/sign-up from completing.
@@ -63,25 +76,29 @@ async function saveUserRecord(user, extra = {}) {
   };
 
   try {
-    await Promise.all([
-      setDoc(doc(db, "users", user.uid), profileFirestore, { merge: true }),
-      set(ref(rtdb, "users/" + user.uid), profileRtdb)
-    ]);
+    await withTimeout(
+      Promise.all([
+        setDoc(doc(db, "users", user.uid), profileFirestore, { merge: true }),
+        set(ref(rtdb, "users/" + user.uid), profileRtdb)
+      ]),
+      6000,
+      "Profile sync"
+    );
   } catch (err) {
-    console.warn("[auth] profile sync to Firestore/RTDB failed:", err);
+    console.warn("[auth] profile sync to Firestore/RTDB failed or timed out:", err);
   }
 }
 
 // Confirms the signed-in user also has a matching record in RTDB.
-// Never throws — returns the record, or null if missing/unreadable,
+// Never throws — returns the record, or null if missing/unreadable/slow,
 // so a rules/network hiccup here can't break the login flow.
 async function verifyAgainstRtdb(user) {
   try {
-    const snap = await get(ref(rtdb, "users/" + user.uid));
+    const snap = await withTimeout(get(ref(rtdb, "users/" + user.uid)), 6000, "RTDB verify");
     if (!snap.exists()) return null;
     return snap.val();
   } catch (err) {
-    console.warn("[auth] RTDB verification failed:", err);
+    console.warn("[auth] RTDB verification failed or timed out:", err);
     return null;
   }
 }
@@ -111,18 +128,22 @@ export async function logIn(email, password) {
   } else {
     // Just stamp last-login time; failures here are non-fatal.
     try {
-      await Promise.all([
-        setDoc(
-          doc(db, "users", cred.user.uid),
-          { lastLoginAt: fsServerTimestamp() },
-          { merge: true }
-        ),
-        update(ref(rtdb, "users/" + cred.user.uid), {
-          lastLoginAt: rtdbServerTimestamp()
-        })
-      ]);
+      await withTimeout(
+        Promise.all([
+          setDoc(
+            doc(db, "users", cred.user.uid),
+            { lastLoginAt: fsServerTimestamp() },
+            { merge: true }
+          ),
+          update(ref(rtdb, "users/" + cred.user.uid), {
+            lastLoginAt: rtdbServerTimestamp()
+          })
+        ]),
+        6000,
+        "Last-login update"
+      );
     } catch (err) {
-      console.warn("[auth] last-login timestamp update failed:", err);
+      console.warn("[auth] last-login timestamp update failed or timed out:", err);
     }
   }
 
@@ -144,7 +165,7 @@ export async function googleSignIn() {
   // Create the profile the first time we see this user.
   let existing = null;
   try {
-    existing = await getDoc(doc(db, "users", cred.user.uid));
+    existing = await withTimeout(getDoc(doc(db, "users", cred.user.uid)), 6000, "Profile check");
   } catch (err) {
     console.warn("[auth] could not check existing profile:", err);
   }
