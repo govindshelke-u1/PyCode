@@ -11,7 +11,7 @@
 // This is what keeps the login modal from getting "stuck" if your
 // Firestore/RTDB rules reject a write.
 
-import { auth, db, rtdb } from "./firebase-init.js?v=5";
+import { auth, db, rtdb } from "./firebase-init.js?v=6";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -116,44 +116,53 @@ export async function signUp(name, email, password) {
     await updateProfile(cred.user, { displayName: name });
     console.log('[auth.js] display name set');
   }
-  console.log('[auth.js] syncing profile to Firestore/RTDB...');
-  await saveUserRecord(cred.user, { name, isNew: true });
-  console.log('[auth.js] signUp complete');
+  // Fire-and-forget: don't make the user wait on Firestore/RTDB writes.
+  // The account is fully usable already; the profile sync happens
+  // quietly in the background (it's already fault-tolerant + timed out
+  // internally by saveUserRecord).
+  saveUserRecord(cred.user, { name, isNew: true });
+  console.log('[auth.js] signUp complete (profile sync continues in background)');
   return cred.user;
 }
 
 export async function logIn(email, password) {
+  console.log('[auth.js] signing in...');
   const cred = await signInWithEmailAndPassword(auth, email, password);
+  console.log('[auth.js] signed in, uid:', cred.user.uid);
 
-  // Second verification step: confirm a matching RTDB profile exists.
-  // Self-heal common case: auth account exists but profile records
-  // are missing (e.g. user was created before this system existed).
-  const record = await verifyAgainstRtdb(cred.user);
-  if (!record) {
-    await saveUserRecord(cred.user, { isNew: true });
-  } else {
-    // Just stamp last-login time; failures here are non-fatal.
-    try {
-      await withTimeout(
-        Promise.all([
-          setDoc(
-            doc(db, "users", cred.user.uid),
-            { lastLoginAt: fsServerTimestamp() },
-            { merge: true }
-          ),
-          update(ref(rtdb, "users/" + cred.user.uid), {
-            lastLoginAt: rtdbServerTimestamp()
-          })
-        ]),
-        6000,
-        "Last-login update"
-      );
-    } catch (err) {
-      console.warn("[auth] last-login timestamp update failed or timed out:", err);
-    }
-  }
+  // Fire-and-forget: verification + last-login stamping happen in the
+  // background so the user isn't stuck waiting on Firestore/RTDB.
+  syncAfterLogin(cred.user);
 
   return cred.user;
+}
+
+// Best-effort background sync after login: confirms/creates the RTDB
+// profile record and stamps last-login time. Never awaited by callers.
+async function syncAfterLogin(user) {
+  const record = await verifyAgainstRtdb(user);
+  if (!record) {
+    await saveUserRecord(user, { isNew: true });
+    return;
+  }
+  try {
+    await withTimeout(
+      Promise.all([
+        setDoc(
+          doc(db, "users", user.uid),
+          { lastLoginAt: fsServerTimestamp() },
+          { merge: true }
+        ),
+        update(ref(rtdb, "users/" + user.uid), {
+          lastLoginAt: rtdbServerTimestamp()
+        })
+      ]),
+      6000,
+      "Last-login update"
+    );
+  } catch (err) {
+    console.warn("[auth] last-login timestamp update failed or timed out:", err);
+  }
 }
 
 export async function logOut() {
@@ -168,14 +177,16 @@ export async function googleSignIn() {
   const provider = new GoogleAuthProvider();
   const cred = await signInWithPopup(auth, provider);
 
-  // Create the profile the first time we see this user.
-  let existing = null;
-  try {
-    existing = await withTimeout(getDoc(doc(db, "users", cred.user.uid)), 6000, "Profile check");
-  } catch (err) {
-    console.warn("[auth] could not check existing profile:", err);
-  }
-  await saveUserRecord(cred.user, { isNew: !(existing && existing.exists()) });
+  // Fire-and-forget: don't block on the profile existence check/write.
+  (async () => {
+    let existing = null;
+    try {
+      existing = await withTimeout(getDoc(doc(db, "users", cred.user.uid)), 6000, "Profile check");
+    } catch (err) {
+      console.warn("[auth] could not check existing profile:", err);
+    }
+    await saveUserRecord(cred.user, { isNew: !(existing && existing.exists()) });
+  })();
 
   return cred.user;
 }
