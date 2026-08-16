@@ -12,6 +12,18 @@
   <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
 
+  <!-- Firebase: saves this module's score so it shows up on the home page -->
+  <script type="module">
+    import { auth, db } from "../assets/firebase-init.js?v=8";
+    import { saveModuleScore } from "../assets/progress.js?v=1";
+
+    window.saveThisModuleScore = async function(score) {
+      const user = auth.currentUser;
+      if (!user) return; // not logged in — score just won't be saved
+      await saveModuleScore(db, user.uid, "module1", score);
+    };
+  </script>
+
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #e2e8f0; overflow-x: hidden; }
     .code-font { font-family: 'Fira Code', monospace; }
@@ -45,7 +57,6 @@
           <a href="../index.html" class="hover:text-yellow-400 transition">Home</a>
           <a href="../why-python.html" class="hover:text-yellow-400 transition">Why Python?</a>
           <a href="../curriculum.html" class="text-yellow-400">Curriculum</a>
-          <a href="../what-needed.html" class="hover:text-yellow-400 transition">What's Needed</a>
         </div>
       </div>
     </nav>
@@ -462,6 +473,10 @@
       document.getElementById('modalFooter').classList.add('hidden');
 
       document.getElementById('finalScore').textContent = `${mcqScore} / 5`;
+
+      if (typeof window.saveThisModuleScore === 'function') {
+        window.saveThisModuleScore(mcqScore);
+      }
     }
   </script>
 </body>
