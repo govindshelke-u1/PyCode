@@ -542,32 +542,34 @@
 
     let suppressAutoAuthUI = false;
 
-    // Listen for authentication state & sync progress from Firestore
-    initAuthUI(async (user) => {
-      if (suppressAutoAuthUI) return;
-      window.updateGlobalAuthUI(user);
-
-      if (user) {
-        try {
-          const snap = await getDoc(doc(db, "users", user.uid));
-          if (snap.exists()) {
-            const data = snap.data();
-            if (data.enrolled) {
-              localStorage.setItem('pycode_enrolled', 'true');
-              
-              // Instantly update hero button to Resume Learning
-              const enrollBtnText = document.getElementById('enrollBtnText');
-              if (enrollBtnText) enrollBtnText.textContent = "Resume Learning";
-            }
-            if (data.lastLesson) {
-              localStorage.setItem('pycode_last_lesson', data.lastLesson);
-            }
-          }
-        } catch (e) {
-          console.warn("[sync] error reading progress from firestore:", e);
-        }
+    // Immediately fetches enrollment from Firestore and switches the button
+async function syncUserStatus(user) {
+  if (!user) return;
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.enrolled) {
+        localStorage.setItem('pycode_enrolled', 'true');
+        const enrollBtnText = document.getElementById('enrollBtnText');
+        if (enrollBtnText) enrollBtnText.textContent = "Resume Learning";
       }
-    });
+      if (data.lastLesson) {
+        localStorage.setItem('pycode_last_lesson', data.lastLesson);
+      }
+    }
+  } catch (err) {
+    console.warn("Real-time sync error:", err);
+  }
+}
+
+    // Runs on page load and session restoration
+initAuthUI(async (user) => {
+  window.updateGlobalAuthUI(user);
+  if (user) {
+    await syncUserStatus(user);
+  }
+});
 
     // Log Out
     document.getElementById('logoutBtn').addEventListener('click', async () => {
@@ -603,29 +605,30 @@
         )
       ]);
     }
-
-    // Log In Form
+//Login Form
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      hideError('loginError');
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      
-      setBusy('loginSubmitBtn', true, 'Signing in...', 'Sign In');
-      suppressAutoAuthUI = true;
-      try {
-        const user = await withUITimeout(logIn(email, password), 10000, 'Sign in');
-        window.closeModal('loginModal');
-        window.updateGlobalAuthUI(user);
-        window.showToast(`Welcome back, ${user.displayName || email.split('@')[0]}!`);
-        e.target.reset();
-      } catch (err) {
-        showError('loginError', friendlyAuthError(err));
-      } finally {
-        suppressAutoAuthUI = false;
-        setBusy('loginSubmitBtn', false, 'Signing in...', 'Sign In');
-      }
-    });
+  e.preventDefault();
+  hideError('loginError');
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  
+  setBusy('loginSubmitBtn', true, 'Signing in...', 'Sign In');
+  try {
+    const user = await withUITimeout(logIn(email, password), 10000, 'Sign in');
+    window.closeModal('loginModal');
+    window.updateGlobalAuthUI(user);
+    
+    // Sync Firestore data immediately so UI mutates instantly
+    await syncUserStatus(user);
+    
+    window.showToast(`Welcome back, ${user.displayName || email.split('@')[0]}!`);
+    e.target.reset();
+  } catch (err) {
+    showError('loginError', friendlyAuthError(err));
+  } finally {
+    setBusy('loginSubmitBtn', false, 'Signing in...', 'Sign In');
+  }
+});
 
     // Sign Up Form
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
@@ -651,22 +654,32 @@
         setBusy('signupSubmitBtn', false, 'Creating account...', 'Create Account');
       }
     });
-
-    // Google Sign-In
+//Googel Singin
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
-      hideError('loginError');
-      suppressAutoAuthUI = true;
-      try {
-        const user = await googleSignIn();
-        window.closeModal('loginModal');
-        window.updateGlobalAuthUI(user);
-        window.showToast(`Welcome, ${user.displayName || user.email}!`);
-      } catch (err) {
-        showError('loginError', friendlyAuthError(err));
-      } finally {
-        suppressAutoAuthUI = false;
-      }
-    });
+  hideError('loginError');
+  try {
+    const user = await googleSignIn();
+    window.closeModal('loginModal');
+    window.updateGlobalAuthUI(user);
+    await syncUserStatus(user);
+    window.showToast(`Welcome, ${user.displayName || user.email}!`);
+  } catch (err) {
+    showError('loginError', friendlyAuthError(err));
+  }
+});
+
+document.getElementById('googleSignupBtn').addEventListener('click', async () => {
+  hideError('signupError');
+  try {
+    const user = await googleSignIn();
+    window.closeModal('signupModal');
+    window.updateGlobalAuthUI(user);
+    await syncUserStatus(user);
+    window.showToast(`Welcome, ${user.displayName || user.email}!`);
+  } catch (err) {
+    showError('signupError', friendlyAuthError(err));
+  }
+});
 
     document.getElementById('googleSignupBtn').addEventListener('click', async () => {
       hideError('signupError');
@@ -699,40 +712,38 @@
         showError('loginError', friendlyAuthError(err));
       }
     });
-
-    // Payment Form Handler (Stores enrollment to Firestore & localStorage)
+//Pyment form
     document.getElementById('paymentForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) {
-        window.openModal('loginModal');
-        return;
-      }
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user) {
+    window.openModal('loginModal');
+    return;
+  }
 
-      setBusy('paymentSubmitBtn', true, 'Processing...', 'Complete Payment • ₹10');
+  setBusy('paymentSubmitBtn', true, 'Processing...', 'Complete Payment • ₹10');
 
-      // 1. Mark in client storage immediately
-      localStorage.setItem('pycode_enrolled', 'true');
-      localStorage.setItem('pycode_last_lesson', 'Module1/M01-L01.html');
+  // 1. Instant local updates
+  localStorage.setItem('pycode_enrolled', 'true');
+  localStorage.setItem('pycode_last_lesson', 'Module1/M01-L01.html');
 
-      // 2. Instantly update button on page (no refresh needed)
-      const enrollBtnText = document.getElementById('enrollBtnText');
-      if (enrollBtnText) enrollBtnText.textContent = "Resume Learning";
+  const enrollBtnText = document.getElementById('enrollBtnText');
+  if (enrollBtnText) enrollBtnText.textContent = "Resume Learning";
 
-      // 3. Persist to Firestore
-      try {
-        await setDoc(doc(db, "users", user.uid), {
-          enrolled: true,
-          enrolledAt: serverTimestamp(),
-          lastLesson: "Module1/M01-L01.html"
-        }, { merge: true });
-      } catch (err) {
-        console.warn("Enrollment save error:", err);
-      }
+  // 2. Persist to Firestore
+  try {
+    await setDoc(doc(db, "users", user.uid), {
+      enrolled: true,
+      enrolledAt: serverTimestamp(),
+      lastLesson: "Module1/M01-L01.html"
+    }, { merge: true });
+  } catch (err) {
+    console.warn("Enrollment save error:", err);
+  }
 
-      window.closeModal('paymentModal');
-      window.location.href = "Wellcome.html";
-    });
+  window.closeModal('paymentModal');
+  window.location.href = "Wellcome.html";
+});
 
     function friendlyAuthError(err) {
       const code = err && err.code ? err.code : '';
