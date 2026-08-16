@@ -14,13 +14,22 @@
 
   <!-- Firebase: saves this module's score so it shows up on the home page -->
   <script type="module">
-    import { auth, db } from "../assets/firebase-init.js?v=8";
-    import { saveModuleScore } from "../assets/progress.js?v=1";
+    import { auth, db } from "../assets/firebase-init.js?v=9";
+    import { saveModuleScore } from "../assets/progress.js?v=2";
 
     window.saveThisModuleScore = async function(score) {
       const user = auth.currentUser;
-      if (!user) return; // not logged in — score just won't be saved
-      await saveModuleScore(db, user.uid, "module1", score);
+      console.log('[progress] saveThisModuleScore called, score:', score, 'user:', user ? user.uid : null);
+      if (!user) {
+        console.warn('[progress] not logged in — score will NOT be saved. Log in before finishing the test.');
+        return;
+      }
+      try {
+        await saveModuleScore(db, user.uid, "module1", score);
+        console.log('[progress] score saved successfully for module1');
+      } catch (err) {
+        console.error('[progress] save failed:', err);
+      }
     };
   </script>
 
