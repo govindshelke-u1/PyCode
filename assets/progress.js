@@ -2,44 +2,45 @@
 import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 export const MODULE_IDS = ["module1", "module2", "module3", "module4", "module5", "module6", "module7"];
-export const LESSONS_PER_MODULE = 4;
-export const TOTAL_LESSONS = MODULE_IDS.length * LESSONS_PER_MODULE; // 28 total lessons
-export const POINTS_PER_LESSON = 10;
-export const MAX_POINTS = TOTAL_LESSONS * POINTS_PER_LESSON; // 280 pts total
+export const MAX_POINTS_PER_MODULE = 5; // 5 points per module test
+export const TOTAL_MODULES = MODULE_IDS.length;
+export const MAX_POINTS = TOTAL_MODULES * MAX_POINTS_PER_MODULE; // 35 pts total
 
-// Mark an individual lesson as completed and persist to Firestore + localStorage
-export async function markLessonComplete(db, uid, lessonId) {
-  if (!uid || !lessonId) return;
+// Save Module Test Score to Firestore & localStorage
+export async function saveModuleScore(db, uid, moduleId, score) {
+  if (!uid || !moduleId) return;
 
-  // 1. Instant local persistence for fast UI rendering
-  const localCompleted = JSON.parse(localStorage.getItem('pycode_completed_lessons') || '{}');
-  localCompleted[lessonId] = true;
-  localStorage.setItem('pycode_completed_lessons', JSON.stringify(localCompleted));
+  // 1. Local backup
+  const localScores = JSON.parse(localStorage.getItem('pycode_scores') || '{}');
+  localScores[moduleId] = Math.max(localScores[moduleId] || 0, score);
+  localStorage.setItem('pycode_scores', JSON.stringify(localScores));
 
-  // 2. Persist to Firestore
+  // 2. Write to Firestore
   try {
     await setDoc(
       doc(db, "users", uid),
       {
-        [`completedLessons.${lessonId}`]: true,
+        [`scores.${moduleId}`]: score,
+        [`completedModules.${moduleId}`]: true,
         lastActiveAt: serverTimestamp()
       },
       { merge: true }
     );
+    console.log(`[progress] Saved ${moduleId} score (${score}/${MAX_POINTS_PER_MODULE}) for user ${uid}`);
   } catch (err) {
-    console.warn("[progress] failed to save lesson completion:", err);
+    console.warn("[progress] Failed to save module score to Firestore:", err);
   }
 }
 
-// Computes user points, completed lesson count, and percentage
+// Fetch complete progress summary
 export async function getUserProgress(db, uid) {
   const empty = {
     totalPoints: 0,
     maxPoints: MAX_POINTS,
-    completedLessonsCount: 0,
-    totalLessons: TOTAL_LESSONS,
+    completedCount: 0,
+    totalModules: TOTAL_MODULES,
     percent: 0,
-    completedLessons: {}
+    scores: {}
   };
   if (!uid) return empty;
 
@@ -48,25 +49,33 @@ export async function getUserProgress(db, uid) {
     if (!snap.exists()) return empty;
 
     const data = snap.data();
-    const completedLessons = data.completedLessons || {};
+    const scores = data.scores || {};
+    const completed = data.completedModules || {};
 
-    const completedLessonsCount = Object.keys(completedLessons).filter(
-      (key) => completedLessons[key] === true
-    ).length;
+    let totalPoints = 0;
+    let completedCount = 0;
 
-    const totalPoints = completedLessonsCount * POINTS_PER_LESSON;
-    const percent = Math.min(100, Math.round((completedLessonsCount / TOTAL_LESSONS) * 100));
+    MODULE_IDS.forEach((id) => {
+      if (typeof scores[id] === "number") {
+        totalPoints += scores[id];
+      }
+      if (completed[id] === true) {
+        completedCount++;
+      }
+    });
+
+    const percent = Math.min(100, Math.round((totalPoints / MAX_POINTS) * 100));
 
     return {
       totalPoints,
       maxPoints: MAX_POINTS,
-      completedLessonsCount,
-      totalLessons: TOTAL_LESSONS,
+      completedCount,
+      totalModules: TOTAL_MODULES,
       percent,
-      completedLessons
+      scores
     };
   } catch (err) {
-    console.warn("[progress] failed to load user progress:", err);
+    console.warn("[progress] Failed to load progress:", err);
     return empty;
   }
 }
