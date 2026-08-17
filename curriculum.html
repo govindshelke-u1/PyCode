@@ -11,10 +11,91 @@
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #e2e8f0; overflow-x: hidden; }
     .code-font { font-family: 'Fira Code', monospace; }
-    @keyframes pulseGlow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
+    
+    /* Ambient Pulsing Background Glows */
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.25; transform: scale(1); } 50% { opacity: 0.45; transform: scale(1.05); } }
     .glow-bg { animation: pulseGlow 8s ease-in-out infinite; }
-    .glass-card { background: rgba(18, 24, 38, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-card:hover { border-color: rgba(234, 179, 8, 0.3); }
+
+    /* ================= CONTINUOUS CENTER CORE EFFECT ================= */
+
+    /* 1. Initial Entry to Center (Runs Once upon load) */
+    @keyframes enterRing {
+      0% { transform: translate(-50vw, -50%) scale(0.6); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+    @keyframes enterPy {
+      0% { transform: translate(50vw, -50%) scale(0.6); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    /* 2. Continuous Ambient Pulsing Energy Core */
+    @keyframes coreEnergyPulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: drop-shadow(0 0 20px rgba(234, 179, 8, 0.4)) drop-shadow(0 0 35px rgba(59, 130, 246, 0.3));
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.08);
+        filter: drop-shadow(0 0 40px rgba(234, 179, 8, 0.7)) drop-shadow(0 0 60px rgba(59, 130, 246, 0.6));
+      }
+    }
+
+    /* 3. Continuous Shockwave Rings Emanating from Center */
+    @keyframes continuousWave1 {
+      0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.8; }
+      100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+    }
+    @keyframes continuousWave2 {
+      0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.8; }
+      100% { transform: translate(-50%, -50%) scale(4.2); opacity: 0; }
+    }
+
+    /* 4. Continuous Orbit Rotations (Dual Counter-Rotating Layers) */
+    @keyframes orbitClockwise {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes orbitCounterClockwise {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    /* Animation Classes */
+    .initial-enter-ring {
+      animation: enterRing 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .initial-enter-py {
+      animation: enterPy 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    .continuous-core-pulse {
+      animation: coreEnergyPulse 4s ease-in-out infinite;
+    }
+    .spin-ring-cw {
+      animation: orbitClockwise 18s linear infinite;
+    }
+    .spin-ring-ccw {
+      animation: orbitCounterClockwise 26s linear infinite;
+    }
+
+    .shockwave-wave-1 {
+      animation: continuousWave1 3s ease-out infinite;
+    }
+    .shockwave-wave-2 {
+      animation: continuousWave2 3s ease-out infinite 1.5s;
+    }
+
+    /* Card styling */
+    .glass-card { 
+      background: rgba(18, 24, 38, 0.85); 
+      backdrop-filter: blur(16px); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      transition: all 0.2s ease;
+    }
+    .glass-card:hover { 
+      border-color: rgba(234, 179, 8, 0.3);
+      transform: translateY(-1px);
+    }
     .modal-backdrop { background: rgba(5, 8, 15, 0.85); backdrop-filter: blur(8px); }
 
     @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -23,13 +104,60 @@
     .toast.toast-leaving { animation: toastOut 0.25s ease-in forwards; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between text-slate-200">
+<body class="min-h-screen flex flex-col justify-between text-slate-200 relative">
 
-  <!-- Background Ambient Glow -->
+  <!-- Background Ambient Color Glows -->
   <div class="fixed top-0 left-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none glow-bg"></div>
   <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none glow-bg" style="animation-delay: -4s;"></div>
 
-  <div>
+  <!-- ================= CONTINUOUS CENTER FUSION BACKGROUND ================= -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
+    
+    <!-- Continuous Shockwaves Radiating from Center -->
+    <div class="absolute top-1/2 left-1/2 w-40 h-40 rounded-full border border-yellow-400/40 bg-radial from-yellow-400/20 via-blue-500/10 to-transparent blur-md shockwave-wave-1"></div>
+    <div class="absolute top-1/2 left-1/2 w-40 h-40 rounded-full border border-blue-400/30 bg-radial from-blue-500/20 via-yellow-400/10 to-transparent blur-md shockwave-wave-2"></div>
+
+    <!-- Center Stage Container -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 continuous-core-pulse">
+
+      <!-- 1. Primary Orbiting Symbol Ring (Clockwise) -->
+      <div class="initial-enter-ring absolute top-1/2 left-1/2 z-10">
+        <div class="spin-ring-cw relative w-80 h-80 flex items-center justify-center">
+          <span class="absolute font-mono font-bold text-yellow-400/45 text-2xl" style="transform: rotate(0deg) translate(130px) rotate(0deg);">{ }</span>
+          <span class="absolute font-mono font-bold text-blue-400/45 text-2xl" style="transform: rotate(51.4deg) translate(130px) rotate(-51.4deg);">&lt;/&gt;</span>
+          <span class="absolute font-mono font-bold text-emerald-400/45 text-xl" style="transform: rotate(102.8deg) translate(130px) rotate(-102.8deg);">[ : ]</span>
+          <span class="absolute font-mono font-bold text-purple-400/45 text-2xl" style="transform: rotate(154.2deg) translate(130px) rotate(-154.2deg);">def</span>
+          <span class="absolute font-mono font-bold text-cyan-400/45 text-2xl" style="transform: rotate(205.7deg) translate(130px) rotate(-205.7deg);">#</span>
+          <span class="absolute font-mono font-bold text-amber-400/45 text-xl" style="transform: rotate(257.1deg) translate(130px) rotate(-257.1deg);">( )</span>
+          <span class="absolute font-mono font-bold text-rose-400/45 text-lg" style="transform: rotate(308.5deg) translate(130px) rotate(-308.5deg);">==</span>
+        </div>
+      </div>
+
+      <!-- 2. Outer Orbiting Micro-Symbols (Counter-Clockwise) -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-60">
+        <div class="spin-ring-ccw relative w-[420px] h-[420px] flex items-center justify-center">
+          <span class="absolute font-mono font-semibold text-blue-400/30 text-sm" style="transform: rotate(0deg) translate(190px);">&gt;&gt;&gt;</span>
+          <span class="absolute font-mono font-semibold text-yellow-400/30 text-sm" style="transform: rotate(72deg) translate(190px);">print()</span>
+          <span class="absolute font-mono font-semibold text-emerald-400/30 text-sm" style="transform: rotate(144deg) translate(190px);">True</span>
+          <span class="absolute font-mono font-semibold text-purple-400/30 text-sm" style="transform: rotate(216deg) translate(190px);">for</span>
+          <span class="absolute font-mono font-semibold text-cyan-400/30 text-sm" style="transform: rotate(288deg) translate(190px);">input()</span>
+        </div>
+      </div>
+
+      <!-- 3. Overlaid Py Core Badge (Stays Centered & Glowing) -->
+      <div class="initial-enter-py absolute top-1/2 left-1/2 z-20">
+        <div class="w-32 h-32 rounded-3xl bg-slate-900/90 border-2 border-yellow-400/50 backdrop-blur-md flex flex-col items-center justify-center shadow-2xl shadow-blue-500/30">
+          <i class="fa-brands fa-python text-6xl text-yellow-400"></i>
+          <span class="text-xs font-mono font-extrabold tracking-widest text-blue-400 mt-1">PyCode</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <!-- ======================================================================= -->
+
+  <div class="relative z-10">
     <!-- Navigation Header -->
     <nav class="sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/80 bg-slate-950/80">
       <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
@@ -163,7 +291,7 @@
         </div>
       </div>
 
-      <!-- Centered & Enlarged Back to Home Link -->
+      <!-- Centered & Enlarged Back to Home Button -->
       <div class="flex justify-center pt-8 pb-4">
         <a href="index.html" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-yellow-400/50 text-slate-200 hover:text-yellow-400 text-sm font-semibold rounded-xl transition duration-200 flex items-center gap-2 shadow-lg">
           <i class="fa-solid fa-arrow-left text-xs"></i>
@@ -302,7 +430,7 @@
   <div id="toastContainer" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 items-end"></div>
 
   <!-- Footer -->
-  <footer class="border-t border-slate-800/80 bg-slate-950 py-4 mt-8">
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-4 mt-8 relative z-10">
     <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
       <p>© 2026 PyCode. Built for aspiring developers.</p>
       <p class="text-slate-400 font-medium">Developed by <span class="text-yellow-400 font-semibold">:Go-Dev</span></p>
@@ -316,7 +444,7 @@
     </div>
   </footer>
 
-  <!-- State Management & Modal Engine -->
+  <!-- State Management -->
   <script>
     window.isUserLoggedIn = false;
 
