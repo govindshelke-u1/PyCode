@@ -12,21 +12,8 @@
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #e2e8f0; overflow-x: hidden; }
     .code-font { font-family: 'Fira Code', monospace; }
     @keyframes pulseGlow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
-    @keyframes softGlow {
-      0%, 100% {
-        box-shadow: 0 0 8px 1px rgba(245, 158, 11, 0.25);
-        filter: brightness(1);
-      }
-      50% {
-        box-shadow: 0 0 16px 4px rgba(251, 191, 36, 0.5);
-        filter: brightness(1.08);
-      }
-    }
-
-    .animate-soft-glow { animation: softGlow 2.5s infinite ease-in-out; }
     .glow-bg { animation: pulseGlow 8s ease-in-out infinite; }
     .glass-card { background: rgba(18, 24, 38, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-card:hover { border-color: rgba(234, 179, 8, 0.3); }
     .modal-backdrop { background: rgba(5, 8, 15, 0.85); backdrop-filter: blur(8px); }
 
     @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -76,11 +63,6 @@
             <i class="fa-solid fa-right-to-bracket text-xs pointer-events-none"></i>
             <span>Log in</span>
           </button>
-
-          <!-- Top Navbar Action Enroll Button -->
-          <button id="navEnrollBtn" type="button" class="px-4 py-2 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-yellow-500/20 flex items-center gap-1.5 cursor-pointer">
-            <span>Get Course @ ₹10</span>
-          </button>
         </div>
       </div>
     </nav>
@@ -90,14 +72,14 @@
       <h1 class="text-3xl md:text-4xl font-extrabold text-white">
         Python Learning <span class="bg-gradient-to-r from-yellow-400 via-amber-300 to-blue-400 bg-clip-text text-transparent">Curriculum</span>
       </h1>
-      <p class="text-slate-400 text-xs md:text-sm mt-2">Master Python from scratch with structured hands-on modules.</p>
+      <p class="text-slate-400 text-xs md:text-sm mt-2">A comprehensive overview of all 7 foundational learning modules.</p>
     </section>
 
-    <!-- Clean Sequential Modules List (1 to 7) -->
+    <!-- Clean Informational Modules List (1 to 7) -->
     <main class="max-w-4xl mx-auto px-6 py-4 space-y-3">
       
       <!-- 01. Variable & Data Type -->
-      <div class="module-card glass-card rounded-xl px-5 py-4 flex items-center justify-between transition duration-200 cursor-pointer hover:scale-[1.01]">
+      <div class="glass-card rounded-xl px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="w-8 h-8 rounded-lg bg-yellow-400/10 text-yellow-400 font-bold flex items-center justify-center text-sm border border-yellow-400/20 shrink-0">01</span>
           <h3 class="text-base font-bold text-white">Variable & Data Type</h3>
@@ -109,7 +91,7 @@
       </div>
 
       <!-- 02. Condition -->
-      <div class="module-card glass-card rounded-xl px-5 py-4 flex items-center justify-between transition duration-200 cursor-pointer hover:scale-[1.01]">
+      <div class="glass-card rounded-xl px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 font-bold flex items-center justify-center text-sm border border-blue-500/20 shrink-0">02</span>
           <h3 class="text-base font-bold text-white">Condition</h3>
@@ -121,7 +103,7 @@
       </div>
 
       <!-- 03. List & Tuples -->
-      <div class="module-card glass-card rounded-xl px-5 py-4 flex items-center justify-between transition duration-200 cursor-pointer hover:scale-[1.01]">
+      <div class="glass-card rounded-xl px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold flex items-center justify-center text-sm border border-emerald-500/20 shrink-0">03</span>
           <h3 class="text-base font-bold text-white">List & Tuples</h3>
@@ -133,7 +115,7 @@
       </div>
 
       <!-- 04. Dictionary & Set -->
-      <div class="module-card glass-card rounded-xl px-5 py-4 flex items-center justify-between transition duration-200 cursor-pointer hover:scale-[1.01]">
+      <div class="glass-card rounded-xl px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 font-bold flex items-center justify-center text-sm border border-purple-500/20 shrink-0">04</span>
           <h3 class="text-base font-bold text-white">Dictionary & Set</h3>
@@ -145,7 +127,7 @@
       </div>
 
       <!-- 05. Loops -->
-      <div class="module-card glass-card rounded-xl px-5 py-4 flex items-center justify-between transition duration-200 cursor-pointer hover:scale-[1.01]">
+      <div class="glass-card rounded-xl px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 font-bold flex items-center justify-center text-sm border border-amber-500/20 shrink-0">05</span>
           <h3 class="text-base font-bold text-white">Loops</h3>
@@ -157,7 +139,7 @@
       </div>
 
       <!-- 06. Functions -->
-      <div class="module-card glass-card rounded-xl px-5 py-4 flex items-center justify-between transition duration-200 cursor-pointer hover:scale-[1.01]">
+      <div class="glass-card rounded-xl px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 font-bold flex items-center justify-center text-sm border border-cyan-500/20 shrink-0">06</span>
           <h3 class="text-base font-bold text-white">Functions</h3>
@@ -169,7 +151,7 @@
       </div>
 
       <!-- 07. File I/O -->
-      <div class="module-card glass-card rounded-xl px-5 py-4 flex items-center justify-between transition duration-200 cursor-pointer hover:scale-[1.01]">
+      <div class="glass-card rounded-xl px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 font-bold flex items-center justify-center text-sm border border-rose-500/20 shrink-0">07</span>
           <h3 class="text-base font-bold text-white">File I/O</h3>
@@ -178,14 +160,6 @@
           <span class="bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">open()</span>
           <span class="bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">read() / write()</span>
         </div>
-      </div>
-
-      <!-- Bottom Main Enroll Trigger Button -->
-      <div class="flex justify-center pt-8 pb-4">
-        <button id="mainEnrollBtn" type="button" class="animate-soft-glow relative w-fit px-12 py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-base rounded-xl transition-transform duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-yellow-500/20">
-          <span>Enroll Now</span>
-          <i class="fa-solid fa-bolt text-xs pointer-events-none"></i>
-        </button>
       </div>
 
     </main>
@@ -203,7 +177,7 @@
           <i class="fa-brands fa-python"></i>
         </div>
         <h2 class="text-2xl font-bold text-white">Welcome to PyCode</h2>
-        <p class="text-slate-400 text-xs mt-1">Please sign in to proceed with enrollment</p>
+        <p class="text-slate-400 text-xs mt-1">Please sign in to track your learning progress</p>
       </div>
 
       <p id="loginError" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2 mb-4"></p>
@@ -315,92 +289,6 @@
     </div>
   </div>
 
-  <!-- OVERLAY 2: ENROLL / PAYMENT PORTAL MODAL -->
-  <div id="paymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
-    <div class="glass-card w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-700/80 relative max-h-[90vh] overflow-y-auto">
-      <button type="button" onclick="closeModal('paymentModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white transition w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-800 cursor-pointer">
-        <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
-      </button>
-
-      <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
-        <div class="w-10 h-10 rounded-xl bg-yellow-400/10 border border-yellow-400/30 flex items-center justify-center text-yellow-400 font-bold">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
-        <div>
-          <h2 class="text-xl font-bold text-white">Enroll in PyCode 2026</h2>
-          <p class="text-slate-400 text-xs">Lifetime access to beginner Python curriculum</p>
-        </div>
-      </div>
-
-      <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 mb-6 flex justify-between items-center">
-        <div>
-          <span class="text-xs uppercase font-semibold text-yellow-400 tracking-wider">Course Plan</span>
-          <h3 class="text-slate-100 font-bold text-sm mt-0.5">Python Mastery Starter</h3>
-          <p class="text-slate-500 text-xs">Complete Course + Projects & Support</p>
-        </div>
-        <div class="text-right">
-          <span class="text-2xl font-extrabold text-white">₹10</span>
-          <span class="block text-[10px] text-slate-400 line-through">₹499</span>
-        </div>
-      </div>
-
-      <form onsubmit="event.preventDefault(); window.location.href='Wellcome.html';" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-2">Select Payment Method</label>
-          <div class="grid grid-cols-3 gap-2">
-            <label class="flex flex-col items-center justify-center p-3 rounded-xl border border-yellow-400/80 bg-yellow-400/10 text-yellow-400 cursor-pointer text-xs font-semibold gap-1">
-              <input type="radio" name="pay_method" checked class="hidden">
-              <i class="fa-regular fa-credit-card text-base pointer-events-none"></i> Card
-            </label>
-            <label class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 cursor-pointer text-xs font-semibold gap-1 hover:border-slate-700">
-              <input type="radio" name="pay_method" class="hidden">
-              <i class="fa-solid fa-qrcode text-base pointer-events-none"></i> UPI
-            </label>
-            <label class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 cursor-pointer text-xs font-semibold gap-1 hover:border-slate-700">
-              <input type="radio" name="pay_method" class="hidden">
-              <i class="fa-solid fa-building-columns text-base pointer-events-none"></i> NetBanking
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Cardholder Name</label>
-          <input type="text" placeholder="John Doe" required class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-yellow-400 transition" />
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Card Number</label>
-          <div class="relative">
-            <input type="text" placeholder="4532 •••• •••• 8890" maxlength="19" required class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-yellow-400 transition" />
-            <div class="absolute right-3 top-3 text-slate-400 flex gap-2 text-sm pointer-events-none">
-              <i class="fa-brands fa-cc-visa"></i>
-              <i class="fa-brands fa-cc-mastercard"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Expiry Date</label>
-            <input type="text" placeholder="MM/YY" maxlength="5" required class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-yellow-400 transition" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">CVV / CVC</label>
-            <input type="password" placeholder="123" maxlength="4" required class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-yellow-400 transition" />
-          </div>
-        </div>
-
-        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-yellow-500/20 transition text-sm flex items-center justify-center gap-2 mt-2 cursor-pointer">
-          <i class="fa-solid fa-lock text-xs pointer-events-none"></i> Complete Payment • ₹10
-        </button>
-
-        <p class="text-center text-[11px] text-slate-500 flex items-center justify-center gap-1 mt-2">
-          <i class="fa-solid fa-shield text-slate-600"></i> Encrypted 256-bit SSL Secure Payment
-        </p>
-      </form>
-    </div>
-  </div>
-
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 items-end"></div>
 
@@ -423,7 +311,6 @@
   <script>
     window.isUserLoggedIn = false;
 
-    // Central UI Updater
     window.updateGlobalAuthUI = function(user, explicitName) {
       const loginTrigger = document.getElementById('loginTrigger');
       const userProfileBadge = document.getElementById('userProfileBadge');
@@ -461,7 +348,6 @@
       }
     };
 
-    // Toast Notifications
     window.showToast = function(message, type = 'success') {
       const container = document.getElementById('toastContainer');
       if (!container) return;
@@ -492,7 +378,6 @@
       }
     }
 
-    // Modal Control Functions
     window.openModal = function(modalId) {
       resetFormState(modalId);
       const modal = document.getElementById(modalId);
@@ -514,7 +399,6 @@
       if (e.key === 'Escape') {
         closeModal('loginModal');
         closeModal('signupModal');
-        closeModal('paymentModal');
       }
     });
 
@@ -522,7 +406,6 @@
       if (e.target.classList.contains('modal-backdrop')) {
         closeModal('loginModal');
         closeModal('signupModal');
-        closeModal('paymentModal');
       }
     });
 
@@ -540,25 +423,6 @@
 
     document.getElementById('loginTrigger').addEventListener('click', () => {
       openModal('loginModal');
-    });
-
-    // Unified Enrollment Logic
-    function handleEnrollClick(e) {
-      e.preventDefault();
-      if (window.isUserLoggedIn) {
-        openModal('paymentModal');
-      } else {
-        openModal('loginModal');
-      }
-    }
-
-    // Hook all enrollment points
-    document.getElementById('navEnrollBtn').addEventListener('click', handleEnrollClick);
-    document.getElementById('mainEnrollBtn').addEventListener('click', handleEnrollClick);
-
-    // Make each curriculum module card trigger enrollment/lesson check
-    document.querySelectorAll('.module-card').forEach(card => {
-      card.addEventListener('click', handleEnrollClick);
     });
   </script>
 
