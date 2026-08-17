@@ -584,7 +584,7 @@ async function syncUserStatus(user) {
   }
 }
 
-    // Fetches the user's lesson progress and updates the progress card
+// Inside index.html <script type="module">
 async function renderProgress(user) {
   const card = document.getElementById('progressCard');
   if (!user) {
@@ -594,7 +594,6 @@ async function renderProgress(user) {
 
   const progress = await getUserProgress(db, user.uid);
 
-  // Update card elements
   const pointsEl = document.getElementById('progressPoints');
   const maxPointsEl = document.getElementById('progressMaxPoints');
   const textEl = document.getElementById('progressModulesText');
@@ -603,7 +602,7 @@ async function renderProgress(user) {
 
   if (pointsEl) pointsEl.textContent = progress.totalPoints;
   if (maxPointsEl) maxPointsEl.textContent = progress.maxPoints;
-  if (textEl) textEl.textContent = `${progress.completedLessonsCount} of ${progress.totalLessons} lessons completed`;
+  if (textEl) textEl.textContent = `${progress.completedCount} of ${progress.totalModules} modules completed`;
   if (percentEl) percentEl.textContent = `${progress.percent}%`;
   if (barFillEl) barFillEl.style.width = `${progress.percent}%`;
 
