@@ -1,44 +1,45 @@
 // assets/progress.js
-// Tracks per-module quiz scores in Firestore and computes overall
-// points + completion percentage for display on index.html.
-//
-// Data shape on users/{uid}:
-//   scores:           { module1: 4, module2: 5, ... }   (points earned, out of MAX_POINTS_PER_MODULE)
-//   completedModules: { module1: true, module2: true }  (marks a module as attempted/finished)
-//
-// Update this list as new modules are published.
-export const MODULE_IDS = ["module1", "module2", "module3"];
-export const MAX_POINTS_PER_MODULE = 5; // 5 MCQs per test, 1 point each
+import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+export const MODULE_IDS = ["module1", "module2", "module3", "module4", "module5", "module6", "module7"];
+export const LESSONS_PER_MODULE = 4;
+export const TOTAL_LESSONS = MODULE_IDS.length * LESSONS_PER_MODULE; // 28 total lessons
+export const POINTS_PER_LESSON = 10;
+export const MAX_POINTS = TOTAL_LESSONS * POINTS_PER_LESSON; // 280 pts total
 
-// Call this from a Test-ModuleX page when the user finishes the quiz.
-// Safe to call even if Firestore is briefly unreachable — it just warns.
-export async function saveModuleScore(db, uid, moduleId, score) {
-  if (!uid) return;
+// Mark an individual lesson as completed and persist to Firestore + localStorage
+export async function markLessonComplete(db, uid, lessonId) {
+  if (!uid || !lessonId) return;
+
+  // 1. Instant local persistence for fast UI rendering
+  const localCompleted = JSON.parse(localStorage.getItem('pycode_completed_lessons') || '{}');
+  localCompleted[lessonId] = true;
+  localStorage.setItem('pycode_completed_lessons', JSON.stringify(localCompleted));
+
+  // 2. Persist to Firestore
   try {
     await setDoc(
       doc(db, "users", uid),
       {
-        [`scores.${moduleId}`]: score,
-        [`completedModules.${moduleId}`]: true
+        [`completedLessons.${lessonId}`]: true,
+        lastActiveAt: serverTimestamp()
       },
       { merge: true }
     );
   } catch (err) {
-    console.warn("[progress] failed to save module score:", err);
+    console.warn("[progress] failed to save lesson completion:", err);
   }
 }
 
-// Reads a user's progress and returns a summary for display.
+// Computes user points, completed lesson count, and percentage
 export async function getUserProgress(db, uid) {
   const empty = {
     totalPoints: 0,
-    maxPoints: MODULE_IDS.length * MAX_POINTS_PER_MODULE,
-    completedCount: 0,
-    totalModules: MODULE_IDS.length,
+    maxPoints: MAX_POINTS,
+    completedLessonsCount: 0,
+    totalLessons: TOTAL_LESSONS,
     percent: 0,
-    scores: {}
+    completedLessons: {}
   };
   if (!uid) return empty;
 
@@ -47,31 +48,25 @@ export async function getUserProgress(db, uid) {
     if (!snap.exists()) return empty;
 
     const data = snap.data();
-    const scores = data.scores || {};
-    const completed = data.completedModules || {};
+    const completedLessons = data.completedLessons || {};
 
-    let totalPoints = 0;
-    let completedCount = 0;
-    MODULE_IDS.forEach((id) => {
-      if (typeof scores[id] === "number") totalPoints += scores[id];
-      if (completed[id]) completedCount++;
-    });
+    const completedLessonsCount = Object.keys(completedLessons).filter(
+      (key) => completedLessons[key] === true
+    ).length;
 
-    const maxPoints = MODULE_IDS.length * MAX_POINTS_PER_MODULE;
-    const percent = MODULE_IDS.length
-      ? Math.round((completedCount / MODULE_IDS.length) * 100)
-      : 0;
+    const totalPoints = completedLessonsCount * POINTS_PER_LESSON;
+    const percent = Math.min(100, Math.round((completedLessonsCount / TOTAL_LESSONS) * 100));
 
     return {
       totalPoints,
-      maxPoints,
-      completedCount,
-      totalModules: MODULE_IDS.length,
+      maxPoints: MAX_POINTS,
+      completedLessonsCount,
+      totalLessons: TOTAL_LESSONS,
       percent,
-      scores
+      completedLessons
     };
   } catch (err) {
-    console.warn("[progress] failed to load progress:", err);
+    console.warn("[progress] failed to load user progress:", err);
     return empty;
   }
 }
