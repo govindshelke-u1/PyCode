@@ -584,26 +584,31 @@ async function syncUserStatus(user) {
   }
 }
 
-    // Fetches the user's points/completion and updates the progress card
-    async function renderProgress(user) {
-      const card = document.getElementById('progressCard');
-      if (!user) {
-        if (card) card.classList.add('hidden');
-        return;
-      }
-      console.log('[progress] fetching progress for uid:', user.uid);
-      const progress = await getUserProgress(db, user.uid);
-      console.log('[progress] loaded:', progress);
+    // Fetches the user's lesson progress and updates the progress card
+async function renderProgress(user) {
+  const card = document.getElementById('progressCard');
+  if (!user) {
+    if (card) card.classList.add('hidden');
+    return;
+  }
 
-      document.getElementById('progressPoints').textContent = progress.totalPoints;
-      document.getElementById('progressMaxPoints').textContent = progress.maxPoints;
-      document.getElementById('progressModulesText').textContent =
-        `${progress.completedCount} of ${progress.totalModules} modules completed`;
-      document.getElementById('progressPercentText').textContent = `${progress.percent}%`;
-      document.getElementById('progressBarFill').style.width = `${progress.percent}%`;
+  const progress = await getUserProgress(db, user.uid);
 
-      if (card) card.classList.remove('hidden');
-    }
+  // Update card elements
+  const pointsEl = document.getElementById('progressPoints');
+  const maxPointsEl = document.getElementById('progressMaxPoints');
+  const textEl = document.getElementById('progressModulesText');
+  const percentEl = document.getElementById('progressPercentText');
+  const barFillEl = document.getElementById('progressBarFill');
+
+  if (pointsEl) pointsEl.textContent = progress.totalPoints;
+  if (maxPointsEl) maxPointsEl.textContent = progress.maxPoints;
+  if (textEl) textEl.textContent = `${progress.completedLessonsCount} of ${progress.totalLessons} lessons completed`;
+  if (percentEl) percentEl.textContent = `${progress.percent}%`;
+  if (barFillEl) barFillEl.style.width = `${progress.percent}%`;
+
+  if (card) card.classList.remove('hidden');
+}
 
     // Runs on page load and session restoration
 initAuthUI(async (user) => {
