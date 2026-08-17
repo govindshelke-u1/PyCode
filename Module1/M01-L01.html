@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1: Hello World - PyCode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Skulpt Browser Python Interpreter -->
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #e2e8f0; overflow-x: hidden; }
+    .code-font { font-family: 'Fira Code', monospace; }
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
+    .glow-bg { animation: pulseGlow 8s ease-in-out infinite; }
+    .glass-card { background: rgba(18, 24, 38, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+  </style>
+  <script type="module">
+  import { auth, db } from "../assets/firebase-init.js?v=9";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { markLessonComplete } from "../assets/progress.js?v=3";
+
+  // Change this ID per lesson file: "m01_l01", "m01_l02", "m01_l03", "m01_l04", etc.
+  const CURRENT_LESSON_ID = "m01_l04";
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      markLessonComplete(db, user.uid, CURRENT_LESSON_ID);
+    }
+  });
+</script>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-200">
+
+  <!-- Background Glow -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none glow-bg"></div>
+  <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none glow-bg" style="animation-delay: -4s;"></div>
+
+  <div>
+    <!-- Compact Navigation Header -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-slate-800/80 bg-slate-950/80">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        <a href="../index.html" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-yellow-400 flex items-center justify-center font-bold text-slate-950 text-base shadow-md">
+            <i class="fa-brands fa-python"></i>
+          </div>
+          <span class="text-lg font-bold tracking-tight text-white">Py<span class="text-yellow-400">Code</span></span>
+        </a>
+        <div class="hidden md:flex gap-6 text-xs font-semibold text-slate-300">
+          <a href="../index.html" class="hover:text-yellow-400 transition">Home</a>
+          <a href="../why-python.html" class="hover:text-yellow-400 transition">Why Python?</a>
+          <a href="../curriculum.html" class="text-yellow-400 font-semibold">Curriculum</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Lesson Container -->
+    <main class="max-w-4xl mx-auto px-6 py-8">
+      
+      <!-- Lesson Title Header -->
+      <div class="mb-6">
+        <div class="flex items-center gap-2 text-xs font-mono text-yellow-400 mb-2">
+          <span>MODULE 01</span>
+          <span>/</span>
+          <span class="text-slate-400">LESSON 1</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white">
+          Your First Program: Hello, World!
+        </h1>
+        <p class="text-slate-400 text-sm mt-2">
+          Write your very first line of Python code and understand how the <code class="code-font text-yellow-300">print()</code> function works.
+        </p>
+      </div>
+
+      <!-- Main Lesson Content -->
+      <div class="glass-card rounded-2xl p-6 md:p-8 space-y-8 border border-slate-800 text-slate-300 text-sm md:text-base leading-relaxed">
+        
+        <!-- SECTION 1: The print() Function -->
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-yellow-400">01.</span> The <code class="code-font text-yellow-300 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">print()</code> Function
+          </h2>
+          <p>
+            In Python, <code class="code-font text-yellow-300">print()</code> is an instruction that tells the computer to display whatever is inside the parentheses onto your screen.
+          </p>
+
+          <!-- Code Snippet Box -->
+          <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 relative font-mono text-xs md:text-sm">
+            <button onclick="copyCode('code1', this)" class="absolute top-3 right-3 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded border border-slate-700 transition flex items-center gap-1 cursor-pointer">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
+            <pre id="code1" class="text-slate-200"><code><span class="text-slate-500"># Your first Python code!</span>
+<span class="text-blue-400">print</span>(<span class="text-emerald-300">"Hello, World!"</span>)</code></pre>
+            <div class="mt-3 pt-3 border-t border-slate-800/80 text-xs text-slate-400">
+              <span class="text-slate-500">&gt;&gt;&gt; Terminal Output:</span>
+              <div class="text-yellow-400 font-bold mt-1">Hello, World!</div>
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- SECTION 2: Why do we use Quotes "" ? -->
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-yellow-400">02.</span> Why Do We Use Quotes <code class="code-font text-emerald-300 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">" "</code>?
+          </h2>
+          <p>
+            Notice that <code class="code-font text-emerald-300">"Hello, World!"</code> is enclosed in double quotes. 
+            The quotes tell Python: <strong>"Treat this as raw text, not code commands."</strong>
+          </p>
+
+          <div class="grid md:grid-cols-2 gap-4 pt-1">
+            
+            <!-- With quotes -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-emerald-500/20">
+              <div class="font-bold text-emerald-400 text-sm mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-check"></i> With Quotes
+              </div>
+              <p class="text-xs text-slate-300">
+                <code class="code-font text-emerald-300">print("Hello")</code> <br/>
+                Python prints the exact text <strong class="text-white">Hello</strong> to your screen.
+              </p>
+            </div>
+
+            <!-- Without quotes -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-red-500/20">
+              <div class="font-bold text-red-400 text-sm mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-xmark"></i> Without Quotes
+              </div>
+              <p class="text-xs text-slate-300">
+                <code class="code-font text-red-300">print(Hello)</code> <br/>
+                Python thinks <code class="code-font text-red-300">Hello</code> is a variable command and throws a <code class="code-font text-red-400">NameError</code>.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- SECTION 3: Top Beginner Mistakes -->
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-yellow-400">03.</span> 3 Common Beginner Mistakes
+          </h2>
+
+          <div class="space-y-2 text-xs md:text-sm">
+            <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-800 flex items-start gap-3">
+              <span class="text-red-400 font-bold font-mono">1.</span>
+              <div>
+                <strong class="text-white">Capitalizing Print:</strong> <code class="code-font text-red-300">Print("Hello")</code> <br/>
+                <span class="text-slate-400 text-xs">Python is case-sensitive. Always use lowercase <code class="code-font text-yellow-300">print</code>.</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-800 flex items-start gap-3">
+              <span class="text-red-400 font-bold font-mono">2.</span>
+              <div>
+                <strong class="text-white">Forgetting Parentheses:</strong> <code class="code-font text-red-300">print "Hello"</code> <br/>
+                <span class="text-slate-400 text-xs">In Python 3, parentheses <code class="code-font text-yellow-300">()</code> are mandatory.</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-800 flex items-start gap-3">
+              <span class="text-red-400 font-bold font-mono">3.</span>
+              <div>
+                <strong class="text-white">Mismatched Quotes:</strong> <code class="code-font text-red-300">print("Hello')</code> <br/>
+                <span class="text-slate-400 text-xs">Start and end with the same quote type (<code class="code-font text-emerald-300">" "</code> or <code class="code-font text-emerald-300">' '</code>).</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- SECTION 4: Interactive In-Browser Code Playground -->
+        <section class="space-y-4 bg-slate-900/40 p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-code text-yellow-400"></i> Try It Yourself (Live Code Editor)
+            </h3>
+            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">PYTHON RUNNER</span>
+          </div>
+
+          <p class="text-xs md:text-sm text-slate-300">
+            Write a Python script that prints two lines: your name on the first line, and your favorite language on the second line.
+          </p>
+
+          <!-- Code Textarea -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between items-center text-xs font-mono text-slate-400">
+              <span><i class="fa-solid fa-terminal text-blue-400 mr-1"></i> Editor:</span>
+            </div>
+            <textarea id="userCodeInput" rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 font-mono text-xs md:text-sm text-yellow-300 focus:outline-none focus:border-yellow-400/50 resize-y" placeholder="# Write your Python code here...&#10;print('Hello World')"></textarea>
+          </div>
+
+          <!-- Playground Actions -->
+          <div class="flex flex-wrap gap-2">
+            <button onclick="runUserCode()" class="flex-1 min-w-[140px] py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-500/10 cursor-pointer">
+              <i class="fa-solid fa-play"></i> Run Code
+            </button>
+            <button onclick="toggleSolution()" class="flex-1 min-w-[140px] py-2.5 bg-slate-800 hover:bg-slate-700 text-yellow-400 border border-slate-700 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-eye"></i> <span id="solBtnText">Show Model Solution</span>
+            </button>
+          </div>
+
+          <!-- Console Output Box -->
+          <div id="consoleOutputContainer" class="hidden space-y-1 pt-1">
+            <span class="text-[10px] font-mono text-slate-400 uppercase font-semibold">Console Output:</span>
+            <pre id="consoleOutput" class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 whitespace-pre-wrap min-h-[60px]"></pre>
+          </div>
+
+          <!-- Model Solution Box -->
+          <div id="solutionBox" class="hidden p-4 rounded-xl border bg-slate-900/90 border-slate-700 space-y-2 transition-all">
+            <div class="font-bold text-xs uppercase tracking-wider text-yellow-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-check"></i> Model Solution
+            </div>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-slate-200">
+              <pre><code><span class="text-blue-400">print</span>(<span class="text-emerald-300">"This is Go-Dev"</span>)
+<span class="text-blue-400">print</span>(<span class="text-emerald-300">"Learning Python!"</span>)</code></pre>
+            </div>
+            <p class="text-xs text-slate-300">Each <code class="code-font text-yellow-300">print()</code> function call outputs onto a new line automatically.</p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Navigation Footer -->
+      <div class="flex justify-between items-center mt-6">
+        <a href="../Wellcome.html" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-semibold rounded-xl transition flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-left text-[10px]"></i>
+          <span>Welcome Overview</span>
+        </a>
+        <a href="M01-L02.html" class="px-5 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold text-xs rounded-xl transition shadow-md shadow-yellow-500/10 flex items-center gap-1.5">
+          <span>Next: Variables & Assignment</span>
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </a>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    function copyCode(elementId, btn) {
+      const codeText = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(codeText).then(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> Copied!';
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+        }, 2000);
+      });
+    }
+
+    // In-browser Python Execution via Skulpt
+    function runUserCode() {
+      const code = document.getElementById('userCodeInput').value;
+      const outputBox = document.getElementById('consoleOutput');
+      const container = document.getElementById('consoleOutputContainer');
+      
+      outputBox.textContent = "";
+      outputBox.className = "bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 whitespace-pre-wrap min-h-[60px]";
+      container.classList.remove('hidden');
+
+      if (!code.trim()) {
+        outputBox.textContent = "No code entered. Please write Python code above to run.";
+        outputBox.className = "bg-slate-950 border border-amber-500/40 rounded-xl p-3 font-mono text-xs text-amber-400 whitespace-pre-wrap";
+        return;
+      }
+
+      function builtinRead(x) {
+        if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+          throw "File not found: '" + x + "'";
+        return Sk.builtinFiles["files"][x];
+      }
+
+      Sk.configure({
+        output: function(text) {
+          outputBox.textContent += text;
+        },
+        read: builtinRead,
+        inputfun: function(promptText) {
+          return window.prompt(promptText || "Enter input:");
+        }
+      });
+
+      Sk.misceval.asyncToPromise(function() {
+        return Sk.importMainWithBody("<stdin>", false, code, true);
+      }).catch(function(err) {
+        outputBox.textContent = err.toString();
+        outputBox.className = "bg-slate-950 border border-red-500/40 rounded-xl p-3 font-mono text-xs text-red-400 whitespace-pre-wrap";
+      });
+    }
+
+    function toggleSolution() {
+      const solBox = document.getElementById('solutionBox');
+      const solBtnText = document.getElementById('solBtnText');
+
+      if (solBox.classList.contains('hidden')) {
+        solBox.classList.remove('hidden');
+        solBtnText.textContent = "Hide Model Solution";
+      } else {
+        solBox.classList.add('hidden');
+        solBtnText.textContent = "Show Model Solution";
+      }
+    }
+  </script>
+</body>
+</html>
