@@ -97,22 +97,16 @@
             </a>
           </div>
 
-          <!-- Your Progress (shown only when logged in) -->
-          <div id="progressCard" class="hidden glass-card rounded-2xl p-5 border border-slate-700/60 max-w-md">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Your Progress</span>
-              <span class="text-xs font-mono font-bold text-yellow-400">
-                <i class="fa-solid fa-star text-[10px] mr-1"></i><span id="progressPoints">0</span> / <span id="progressMaxPoints">15</span> pts
-              </span>
+          <!-- Continue Learning (shown only when logged in) -->
+          <a id="continueLearningCard" href="#" class="hidden glass-card rounded-2xl p-4 border border-slate-700/60 max-w-md items-center justify-between gap-4 hover:border-yellow-400/60 transition group">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Continue where you left off</span>
+              <p id="continueLearningLabel" class="text-slate-100 font-semibold text-sm mt-0.5">Loading...</p>
             </div>
-            <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
-              <div id="progressBarFill" class="bg-gradient-to-r from-yellow-400 to-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            <div class="w-9 h-9 rounded-full bg-yellow-400/10 border border-yellow-400/30 flex items-center justify-center text-yellow-400 group-hover:bg-yellow-400 group-hover:text-slate-950 transition shrink-0">
+              <i class="fa-solid fa-arrow-right text-xs"></i>
             </div>
-            <div class="flex items-center justify-between mt-2 text-[11px] text-slate-400">
-              <span id="progressModulesText">0 of 3 modules completed</span>
-              <span id="progressPercentText" class="font-bold text-emerald-400">0%</span>
-            </div>
-          </div>
+          </a>
         </div>
 
         <!-- Animated Terminal -->
@@ -453,8 +447,11 @@
         if (enrollBtnText) enrollBtnText.textContent = "Enroll Now @ ₹10";
         activeStudentName = "Future Developer";
 
-        const progressCard = document.getElementById('progressCard');
-        if (progressCard) progressCard.classList.add('hidden');
+        const continueLearningCard = document.getElementById('continueLearningCard');
+        if (continueLearningCard) {
+          continueLearningCard.classList.add('hidden');
+          continueLearningCard.classList.remove('flex');
+        }
       }
     };
 
@@ -559,7 +556,7 @@
     import { auth, db } from "./assets/firebase-init.js?v=9";
     import { signUp, logIn, logOut, googleSignIn, resetPassword, initAuthUI } from "./assets/auth.js?v=9";
     import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-    import { getUserProgress } from "./assets/progress.js?v=2";
+    import { getNextLesson } from "./assets/progress.js?v=4";
 
     let suppressAutoAuthUI = false;
 
@@ -585,28 +582,30 @@ async function syncUserStatus(user) {
 }
 
 // Inside index.html <script type="module">
-async function renderProgress(user) {
-  const card = document.getElementById('progressCard');
+async function renderContinueLearning(user) {
+  const card = document.getElementById('continueLearningCard');
+  if (!card) return;
+
   if (!user) {
-    if (card) card.classList.add('hidden');
+    card.classList.add('hidden');
+    card.classList.remove('flex');
     return;
   }
 
-  const progress = await getUserProgress(db, user.uid);
+  const next = await getNextLesson(db, user.uid);
+  const labelEl = document.getElementById('continueLearningLabel');
 
-  const pointsEl = document.getElementById('progressPoints');
-  const maxPointsEl = document.getElementById('progressMaxPoints');
-  const textEl = document.getElementById('progressModulesText');
-  const percentEl = document.getElementById('progressPercentText');
-  const barFillEl = document.getElementById('progressBarFill');
+  if (!next) {
+    // Finished every lesson and test
+    if (labelEl) labelEl.textContent = "You've completed the whole course! 🎉";
+    card.href = "curriculum.html";
+  } else {
+    if (labelEl) labelEl.textContent = next.label;
+    card.href = next.url;
+  }
 
-  if (pointsEl) pointsEl.textContent = progress.totalPoints;
-  if (maxPointsEl) maxPointsEl.textContent = progress.maxPoints;
-  if (textEl) textEl.textContent = `${progress.completedCount} of ${progress.totalModules} modules completed`;
-  if (percentEl) percentEl.textContent = `${progress.percent}%`;
-  if (barFillEl) barFillEl.style.width = `${progress.percent}%`;
-
-  if (card) card.classList.remove('hidden');
+  card.classList.remove('hidden');
+  card.classList.add('flex');
 }
 
     // Runs on page load and session restoration
@@ -615,9 +614,9 @@ initAuthUI(async (user) => {
   window.updateGlobalAuthUI(user);
   if (user) {
     await syncUserStatus(user);
-    await renderProgress(user);
+    await renderContinueLearning(user);
   } else {
-    await renderProgress(null);
+    await renderContinueLearning(null);
   }
 });
 
@@ -671,7 +670,7 @@ initAuthUI(async (user) => {
     
     // Sync Firestore data immediately so UI mutates instantly
     await syncUserStatus(user);
-    await renderProgress(user);
+    await renderContinueLearning(user);
     
     window.showToast(`Welcome back, ${user.displayName || email.split('@')[0]}!`);
     e.target.reset();
@@ -698,7 +697,7 @@ initAuthUI(async (user) => {
         const user = await withUITimeout(signUp(name, email, password), 10000, 'Account creation');
         window.closeModal('signupModal');
         window.updateGlobalAuthUI(user, name);
-        await renderProgress(user);
+        await renderContinueLearning(user);
         window.showToast(`Welcome, ${name}! Your account has been created.`);
         e.target.reset();
       } catch (err) {
@@ -717,7 +716,7 @@ initAuthUI(async (user) => {
     window.closeModal('loginModal');
     window.updateGlobalAuthUI(user);
     await syncUserStatus(user);
-    await renderProgress(user);
+    await renderContinueLearning(user);
     window.showToast(`Welcome, ${user.displayName || user.email}!`);
   } catch (err) {
     showError('loginError', friendlyAuthError(err));
@@ -734,7 +733,7 @@ document.getElementById('googleSignupBtn').addEventListener('click', async () =>
     window.closeModal('signupModal');
     window.updateGlobalAuthUI(user);
     await syncUserStatus(user);
-    await renderProgress(user);
+    await renderContinueLearning(user);
     window.showToast(`Welcome, ${user.displayName || user.email}!`);
   } catch (err) {
     showError('signupError', friendlyAuthError(err));
