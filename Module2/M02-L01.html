@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1: Python Operators - PyCode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #e2e8f0; overflow-x: hidden; }
+    .code-font { font-family: 'Fira Code', monospace; }
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
+    .glow-bg { animation: pulseGlow 8s ease-in-out infinite; }
+    .glass-card { background: rgba(18, 24, 38, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+  </style>
+  <script type="module">
+  import { auth, db } from "../assets/firebase-init.js?v=9";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { markLessonComplete } from "../assets/progress.js?v=4";
+
+  const CURRENT_LESSON_ID = "m02_l01";
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      markLessonComplete(db, user.uid, CURRENT_LESSON_ID);
+    }
+  });
+</script>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-200">
+
+  <!-- Background Glow -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none glow-bg"></div>
+  <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none glow-bg" style="animation-delay: -4s;"></div>
+
+  <div>
+    <!-- Compact Navigation Header -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-slate-800/80 bg-slate-950/80">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        <a href="../index.html" class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-yellow-400 flex items-center justify-center font-bold text-slate-950 text-base shadow-md">
+            <i class="fa-brands fa-python"></i>
+          </div>
+          <span class="text-lg font-bold tracking-tight text-white">Py<span class="text-yellow-400">Code</span></span>
+        </a>
+        <div class="hidden md:flex gap-6 text-xs font-semibold text-slate-300">
+          <a href="../index.html" class="hover:text-yellow-400 transition">Home</a>
+          <a href="../why-python.html" class="hover:text-yellow-400 transition">Why Python?</a>
+          <a href="../curriculum.html" class="text-yellow-400">Curriculum</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Lesson Container -->
+    <main class="max-w-4xl mx-auto px-6 py-8">
+      
+      <!-- Lesson Title Header -->
+      <div class="mb-6">
+        <div class="flex items-center gap-2 text-xs font-mono text-blue-400 mb-2">
+          <span>MODULE 02</span>
+          <span>/</span>
+          <span class="text-slate-400">LESSON 1</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white">
+          Python Operators (Comparison & Logical)
+        </h1>
+        <p class="text-slate-400 text-sm mt-2">
+          Learn how to compare values using operators that return <code class="code-font text-purple-400">True</code> or <code class="code-font text-purple-400">False</code>.
+        </p>
+      </div>
+
+      <!-- Main Lesson Content -->
+      <div class="glass-card rounded-2xl p-6 md:p-8 space-y-8 border border-slate-800 text-slate-300 text-sm md:text-base leading-relaxed">
+        
+        <!-- SECTION 1: Comparison Operators -->
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-blue-400">01.</span> Comparison Operators
+          </h2>
+
+          <p>
+            Comparison operators compare two values and answer with either <code class="code-font text-purple-400">True</code> or <code class="code-font text-purple-400">False</code> (a Boolean result).
+          </p>
+
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2.5 font-mono text-xs pt-1">
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-yellow-400 font-bold text-sm">&gt;</span> Greater than
+              <div class="text-slate-400 text-[11px] mt-1">10 &gt; 5 → True</div>
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-yellow-400 font-bold text-sm">&lt;</span> Less than
+              <div class="text-slate-400 text-[11px] mt-1">3 &lt; 2 → False</div>
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-yellow-400 font-bold text-sm">&gt;=</span> Greater or Equal
+              <div class="text-slate-400 text-[11px] mt-1">5 &gt;= 5 → True</div>
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-yellow-400 font-bold text-sm">&lt;=</span> Less or Equal
+              <div class="text-slate-400 text-[11px] mt-1">4 &lt;= 2 → False</div>
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-yellow-400 font-bold text-sm">==</span> Equal to
+              <div class="text-slate-400 text-[11px] mt-1">5 == 5 → True</div>
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-yellow-400 font-bold text-sm">!=</span> Not Equal to
+              <div class="text-slate-400 text-[11px] mt-1">10 != 5 → True</div>
+            </div>
+          </div>
+
+          <!-- Trap Warning -->
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-yellow-500/30 space-y-1">
+            <div class="flex items-center gap-2 text-yellow-400 font-bold text-xs md:text-sm">
+              <i class="fa-solid fa-triangle-exclamation"></i> Big Beginner Trap: <code class="code-font">=</code> vs <code class="code-font">==</code>
+            </div>
+            <p class="text-xs text-slate-300 leading-normal">
+              A single <code class="code-font text-yellow-300">=</code> <strong>stores</strong> a value into a variable (<code class="code-font">x = 5</code>).<br/>
+              A double <code class="code-font text-yellow-300">==</code> <strong>compares</strong> two values (<code class="code-font">x == 5</code>).
+            </p>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- SECTION 2: Logical Operators -->
+        <section class="space-y-4">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-blue-400">02.</span> Logical Operators (<code class="code-font text-yellow-300">and</code>, <code class="code-font text-yellow-300">or</code>, <code class="code-font text-yellow-300">not</code>)
+          </h2>
+
+          <p>
+            Logical operators let you combine multiple comparison checks together:
+          </p>
+
+          <div class="space-y-2 text-xs md:text-sm">
+            <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+              <strong class="text-yellow-400 font-mono">and</strong> → Returns <code class="code-font text-purple-400">True</code> ONLY IF <strong>both conditions</strong> are True.
+              <div class="text-slate-400 text-xs font-mono mt-1">(10 &gt; 5) and (3 &lt; 8) → <span class="text-emerald-400">True</span></div>
+            </div>
+
+            <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+              <strong class="text-yellow-400 font-mono">or</strong> → Returns <code class="code-font text-purple-400">True</code> IF <strong>at least one condition</strong> is True.
+              <div class="text-slate-400 text-xs font-mono mt-1">(10 &lt; 5) or (3 &lt; 8) → <span class="text-emerald-400">True</span></div>
+            </div>
+
+            <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+              <strong class="text-yellow-400 font-mono">not</strong> → Reverses the result (<code class="code-font">True</code> becomes <code class="code-font">False</code>).
+              <div class="text-slate-400 text-xs font-mono mt-1">not(10 &gt; 5) → <span class="text-red-400">False</span></div>
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- SECTION 3: Code Example -->
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="text-blue-400">03.</span> Code Example
+          </h2>
+
+          <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 font-mono text-xs md:text-sm relative">
+            <button onclick="copyCode('code1', this)" class="absolute top-3 right-3 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded border border-slate-700 transition flex items-center gap-1">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
+            <pre id="code1" class="text-slate-200"><code>age = <span class="text-amber-300">20</span>
+has_id = <span class="text-purple-400">True</span>
+
+<span class="text-slate-500"># Check both conditions using 'and'</span>
+can_enter = (age &gt;= <span class="text-amber-300">18</span>) <span class="text-blue-400">and</span> (has_id == <span class="text-purple-400">True</span>)
+
+<span class="text-blue-400">print</span>(<span class="text-emerald-300">"Can enter event:"</span>, can_enter)  <span class="text-slate-500"># Prints: True</span></code></pre>
+          </div>
+        </section>
+
+        <hr class="border-slate-800/80"/>
+
+        <!-- SECTION 4: Try It Yourself -->
+        <section class="space-y-3 bg-slate-900/40 p-5 rounded-xl border border-slate-800">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-yellow-400"></i> Try It Yourself
+          </h3>
+          <p class="text-xs md:text-sm text-slate-300">
+            Write code with <code class="code-font text-yellow-300">a = 15</code> and <code class="code-font text-yellow-300">b = 20</code>. Print whether <code class="code-font text-yellow-300">a</code> is equal to <code class="code-font text-yellow-300">b</code> using the <code class="code-font text-yellow-300">==</code> operator.
+          </p>
+          
+          <button onclick="toggleAnswer()" class="text-xs font-semibold text-yellow-400 hover:text-yellow-300 transition flex items-center gap-1">
+            <span id="answer-btn-text">Show Solution</span>
+            <i id="answer-icon" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+          </button>
+
+          <div id="exercise-answer" class="hidden pt-2 border-t border-slate-800/80">
+            <div class="bg-slate-950 rounded-lg p-3 font-mono text-xs text-slate-300 border border-slate-800">
+              <pre><code>a = <span class="text-amber-300">15</span>
+b = <span class="text-amber-300">20</span>
+
+<span class="text-blue-400">print</span>(a == b)  <span class="text-slate-500"># Prints: False</span></code></pre>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Navigation Footer -->
+      <div class="flex justify-between items-center mt-6">
+        <a href="../Module1/Test-Module1.html" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-semibold rounded-xl transition flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-left text-[10px]"></i>
+          <span>Prev: Module 1 Test</span>
+        </a>
+        <a href="M02-L02.html" class="px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow-md shadow-yellow-500/10 flex items-center gap-1.5">
+          <span>Next: If & Else Statements</span>
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </a>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    function copyCode(elementId, btn) {
+      const codeText = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(codeText).then(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> Copied!';
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+        }, 2000);
+      });
+    }
+
+    function toggleAnswer() {
+      const answer = document.getElementById('exercise-answer');
+      const btnText = document.getElementById('answer-btn-text');
+      const icon = document.getElementById('answer-icon');
+
+      if (answer.classList.contains('hidden')) {
+        answer.classList.remove('hidden');
+        btnText.textContent = "Hide Solution";
+        icon.classList.add('rotate-180');
+      } else {
+        answer.classList.add('hidden');
+        btnText.textContent = "Show Solution";
+        icon.classList.remove('rotate-180');
+      }
+    }
+  </script>
+</body>
+</html>
