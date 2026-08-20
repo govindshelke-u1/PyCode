@@ -35,6 +35,7 @@ export async function saveModuleScore(db, uid, moduleId, score) {
 // Mark a single lesson page as completed (called from lesson pages, not tests)
 export async function markLessonComplete(db, uid, lessonId) {
   if (!uid || !lessonId) return;
+  console.log(`[progress] marking lesson complete: ${lessonId} for uid ${uid}`);
   try {
     await setDoc(
       doc(db, "users", uid),
@@ -44,8 +45,9 @@ export async function markLessonComplete(db, uid, lessonId) {
       },
       { merge: true }
     );
+    console.log(`[progress] lesson ${lessonId} saved successfully`);
   } catch (err) {
-    console.warn("[progress] Failed to mark lesson complete:", err);
+    console.error(`[progress] FAILED to save lesson ${lessonId}:`, err);
   }
 }
 
@@ -76,19 +78,28 @@ export async function getNextLesson(db, uid) {
   if (!uid) return LESSON_SEQUENCE[0];
   try {
     const snap = await getDoc(doc(db, "users", uid));
+    console.log('[progress] user doc exists:', snap.exists());
     const data = snap.exists() ? snap.data() : {};
+    console.log('[progress] full user doc data:', data);
     const completedLessons = data.completedLessons || {};
     const completedModules = data.completedModules || {};
+    console.log('[progress] completedLessons:', completedLessons);
+    console.log('[progress] completedModules:', completedModules);
 
     for (const item of LESSON_SEQUENCE) {
       const done = item.type === "test"
         ? completedModules[item.moduleId] === true
         : completedLessons[item.id] === true;
-      if (!done) return item;
+      console.log(`[progress] checking ${item.id} (${item.type}) -> done: ${done}`);
+      if (!done) {
+        console.log('[progress] next incomplete item:', item.id);
+        return item;
+      }
     }
+    console.log('[progress] everything complete!');
     return null; // finished everything
   } catch (err) {
-    console.warn("[progress] Failed to compute next lesson:", err);
+    console.error("[progress] FAILED to compute next lesson:", err);
     return LESSON_SEQUENCE[0];
   }
 }
