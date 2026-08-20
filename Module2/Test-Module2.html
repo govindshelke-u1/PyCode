@@ -12,6 +12,27 @@
   <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
 
+  <!-- Firebase: saves this module's score so it shows up on the home page -->
+  <script type="module">
+    import { auth, db } from "../assets/firebase-init.js?v=9";
+    import { saveModuleScore } from "../assets/progress.js?v=5";
+
+    window.saveThisModuleScore = async function(score) {
+      const user = auth.currentUser;
+      console.log('[progress] saveThisModuleScore called, score:', score, 'user:', user ? user.uid : null);
+      if (!user) {
+        console.warn('[progress] not logged in — score will NOT be saved. Log in before finishing the test.');
+        return;
+      }
+      try {
+        await saveModuleScore(db, user.uid, "module2", score);
+        console.log('[progress] score saved successfully for module2');
+      } catch (err) {
+        console.error('[progress] save failed:', err);
+      }
+    };
+  </script>
+
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #e2e8f0; overflow-x: hidden; }
     .code-font { font-family: 'Fira Code', monospace; }
@@ -462,6 +483,10 @@
       document.getElementById('modalFooter').classList.add('hidden');
 
       document.getElementById('finalScore').textContent = `${mcqScore} / 5`;
+
+      if (typeof window.saveThisModuleScore === 'function') {
+        window.saveThisModuleScore(mcqScore);
+      }
     }
   </script>
 </body>
