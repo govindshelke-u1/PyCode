@@ -15,7 +15,7 @@
   <!-- Firebase: saves this module's score so it shows up on the home page -->
   <script type="module">
     import { auth, db } from "../assets/firebase-init.js?v=9";
-    import { saveModuleScore } from "../assets/progress.js?v=2";
+    import { saveModuleScore } from "../assets/progress.js?v=5";
 
     window.saveThisModuleScore = async function(score) {
       const user = auth.currentUser;
@@ -488,30 +488,5 @@
       }
     }
   </script>
-
-  <!-- Add this at the bottom of Test-Module1.html before </body> -->
-<script type="module">
-  import { auth, db } from "../assets/firebase-init.js?v=9";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-  import { saveModuleScore } from "../assets/progress.js?v=3";
-
-  let currentUser = null;
-  onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-  });
-
-  // Override showResults to automatically send score to Firestore
-  const originalShowResults = window.showResults;
-  window.showResults = async function() {
-    if (typeof originalShowResults === "function") {
-      originalShowResults();
-    }
-
-    if (currentUser) {
-      // Save module1 score to Firestore
-      await saveModuleScore(db, currentUser.uid, "module1", mcqScore);
-    }
-  };
-</script>
 </body>
 </html>
